@@ -1,0 +1,180 @@
+@import url(http://fonts.googleapis.com/css?family=Cabin:400,700|Arimo:400,700|Raleway:200,300,400,700|Permanent+Marker)
+@import "compass/utilities/general/clearfix"
+@import "icons/*.png"
+
+@include all-icons-sprites
+
+$main_element_color: black
+$side_element_color: white
+$special_element_color: #0fcbeb
+
+$header_font_color: white
+$text_font_color: black
+$special_font_color: #0fcbeb
+
+$font_text: Arimo, Helvetica, Arial, sans-serif
+$font_header: Raleway, Helvetica, Arial, sans-serif
+$font_special: "Permanent Marker", "Times New Roman", Times, serif
+
+$wrapper_width: 960px
+
+@mixin active_arrow($class:active)
+  &.#{$class}:after, &:hover:after
+    position: absolute
+    bottom: -14px
+    left: 0
+    right: 0
+    margin: 0 auto
+    content: " "
+    width: 0
+    height: 0
+    border-left: 10px solid transparent
+    border-right: 10px solid transparent
+    border-bottom: 10px solid white
+
+
+body
+  font-size: 14px
+  font-family: $font_text
+  color: $text_font_color
+
+h1
+  font-family: $font_header
+
+.bg
+  float: left
+  display: inline
+
+#bg
+  background: white //url(/images/exclusive_paper.png)
+
+.wrapper
+  width: $wrapper_width
+  margin: 0 auto
+
+.header
+  background-color: $main_element_color
+  position: relative
+  padding: 30px 0 6px
+
+  color: $header_font_color
+  font-family: $font_header
+  font-size: 28px
+  font-weight: 200
+
+  &:before
+    content: ""
+    position: absolute
+    left: 0
+    right: 0
+    bottom: 2px
+    height: 4px
+    background-color: $side_element_color
+
+  .wrapper
+    +clearfix
+    position: relative
+    padding-bottom: 14px
+    height: 130px
+
+    .img
+      position: absolute
+      left: 0
+      bottom: 14px
+
+      a
+        padding: 4px
+        border: 2px solid $side_element_color
+        display: block
+        +active_arrow
+
+        img
+          width: 100px
+          height: 100px
+
+    .me
+      position: absolute
+      left: 125px
+      bottom: 14px
+
+      p
+        margin: 0
+
+        span
+          font-family: $font_special
+          color: $special_font_color
+          font-size: 32px
+          line-height: 28px
+          padding: 0 4px
+
+    nav
+      position: absolute
+      bottom: 14px
+      right: 0
+
+      ul
+        margin: 0
+        padding: 0
+
+        li
+          float: left
+          margin-left: 40px
+
+          a
+            text-decoration: none
+            color: $header_font_color
+            display: inline-block
+            position: relative
+            +active_arrow
+
+
+
+
+.footer
+  background-color: $main_element_color
+  position: relative
+  padding-top: 6px
+
+  &:before
+    content: ""
+    position: absolute
+    left: 0
+    right: 0
+    top: 4px
+    height: 2px
+    background-color: $side_element_color
+
+  .wrapper
+    +clearfix
+    height: 100px
+    position: relative
+
+    p.copy
+      color: white
+      margin: 0
+      position: absolute
+      left: 0
+      bottom: 10px
+
+    ul.social
+      position: absolute
+      top: 10px
+      right: 0
+      +clearfix
+      list-style-type: none
+      padding: 0
+      margin: 0
+
+      li
+        float: left
+        margin-left: 20px
+
+
+        a
+          display: inline-block
+          text-indent: -10000px
+          width: 30px
+          height: 30px
+
+
+
