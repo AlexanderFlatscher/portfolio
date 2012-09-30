@@ -13,6 +13,7 @@ class LissajousCircle
 
     @path = @paper.path path_string
 
+    #draw circle
     @circle = @paper.circle(0, 0, radius).attr 
       fill: color
       stroke: color
@@ -26,42 +27,11 @@ class LissajousCircle
       opacity: 0.5
       fill: color###
 
+    #start moving
     @circle.animate
       alongAnimationPath: 1
     , 2e5
-
-
-  progress: ->
-    @t += @speed
-
-  lissajous: ->
-    return r =
-      x: Math.sin(@wx*@t+@omega)
-      y: Math.sin(@wy*@t+@omega)
-
-  ###move: ->
-    console.log this
-    r = @lissajous()
-    @progress()
-
-    r.x = (r.x + 1) * @paper.width / 2
-    r.y = (r.y + 1) * @paper.height / 2
-
-    @circle.stop().animate
-      cx: r.x
-      cy: r.y
-    , 100
-
-    #@glow.transform "t#{r.x},#{r.y}"###
-
-
-
-animateLissajousCircles = (circles) ->
-  c.move() for c in circles
-
-  window.setTimeout ->
-    animateLissajousCircles(circles)
-  , 1
+    
 
 $ ->
   bg = $('#bg-raphael')

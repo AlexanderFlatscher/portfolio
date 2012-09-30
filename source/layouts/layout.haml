@@ -11,8 +11,12 @@
       = data.page.title || "The Middleman" 
     
     = stylesheet_link_tag "normalize", "all"
-    = javascript_include_tag  "//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js", "raphael-min", "all"
+    = javascript_include_tag  "//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js", "raphael-min", "paper", "all"
   
   %body{:class => page_classes}
-    #bg-raphael.bg
+    /#bg-raphael.bg
     %canvas#bg-paper.bg
+    /%p#fps
+    .wrapper
+      .header
+        %h1 Hey there! My name is Alex and I'm a Webdeveloper. Wanna know more about me or my work?
