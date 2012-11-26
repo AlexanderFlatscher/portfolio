@@ -1,0 +1,125 @@
+@import url(http://fonts.googleapis.com/css?family=Ultra)
+@import "compass/utilities/general/clearfix"
+@import "compass/css3/text-shadow"
+@import "compass/css3/transform"
+@import "compass/css3/opacity"
+@import "compass/css3/images"
+@import "icons/*.png"
+
+@include all-icons-sprites
+
+$experimental-support-for-svg: true
+
+$wrapper_width: 960px
+
+html
+  height: 100%
+
+body
+  height: 100%
+  font-size: 14px
+
+::selection, ::-moz-selection
+  color: white
+  background: red
+  +text-shadow(none)
+
+.welcome
+  background: url(/images/black_linen_v3.png)
+  height: 100%
+
+  .multiplebgs.cssgradients.rgba &
+    +background(radial-gradient(rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.2) 80%), image-url("/images/black_linen_v3.png"))
+
+  .multiplebgs.no-cssgradients &
+    position: relative
+
+    &:after
+      content: " "
+      position: absolute
+      top: 0
+      bottom: 0
+      left: 0
+      right: 0
+      +opacity(0.2)
+      +background(radial-gradient(white 0%, black 1000px))
+
+  .welcome_message
+    width: 960px
+    margin: 0 auto
+
+    p
+      margin: 0
+      padding: 50px 0
+      font-family: Ultra, Times, serif
+      font-size: 70px
+      line-height: 90%
+      color: white
+      position: relative
+      text-align: center
+
+      .rgba &
+        color: rgba(255,255,255,0.8)
+
+      .rgba.textshadow &
+        +text-shadow(0 0 12px rgba(0,0,0,0.9))
+        //+text-shadow(0 0 12px rgba(0,0,0,0.9), 0px 0px 3px rgba(200,240,255,0.8))
+
+
+      .hey
+        display: inline-block
+        font-size: 100%
+        padding-right: 47%
+        padding-bottom: 2%
+
+      .there
+        font-size: 230%
+        vertical-align: bottom
+
+      .my
+        padding-right: 30%
+
+      .name
+        font-size: 150%
+
+      .is
+        vertical-align: top
+        padding-right: 10%
+
+      .alex
+        font-size: 300%
+        color: rgba(154,234,234,1)
+        //+text-shadow(none)
+
+      img
+        margin-top: -2%
+        margin-bottom: -5%
+        //.csstransforms &
+        //  +rotate(15deg)
+
+      .andima
+        //display: inline-block
+        //margin-top: -5%
+        padding-right: 18%
+        //padding-bottom: 10%
+        vertical-align: top
+        font-size: 100%
+
+      .web
+        padding-left: 6%
+        font-size: 300%
+        vertical-align: baseline
+
+      .developer
+        font-size: 200%
+
+
+
+
+
+.about_me
+  height: 100%
+  background: red
+
+  p
+    margin: 0

@@ -1,44 +1,43 @@
-@import url(http://fonts.googleapis.com/css?family=Cabin:400,700|Arimo:400,700|Raleway:200,300,400,700|Permanent+Marker)
+@import url(http://fonts.googleapis.com/css?family=Lobster+Two:400,400italic,700,700italic|Open+Sans+Condensed:300,300italic,700|Open+Sans:300italic,400,300|Quicksand:300,400,700)
 @import "compass/utilities/general/clearfix"
+@import "compass/css3/transform"
+@import "compass/css3/transition"
+@import "compass/css3/images"
+@import "compass/css3/text-shadow"
 @import "icons/*.png"
 
 @include all-icons-sprites
 
-$main_element_color: black
-$side_element_color: white
-$special_element_color: #0fcbeb
+$text_color: rgb(23, 23, 23)
+$text_color_alpha: rgba(23, 23, 23, 0.8)
+$dashed_border: 2px dashed $text_color
 
-$header_font_color: black
-$text_font_color: black
-$special_font_color: #0fcbeb
+@mixin uppercase_headline
+  font:
+    size: 100px
+    weight: 300
+  letter-spacing: -0.102em
+  text-transform: uppercase
 
-$font_text: Arimo, Helvetica, Arial, sans-serif
-$font_header: Raleway, Helvetica, Arial, sans-serif
-$font_special: "Permanent Marker", "Times New Roman", Times, serif
-
-$wrapper_width: 960px
-
-@mixin active_arrow($class:active)
-  &.#{$class}:after, &:hover:after
-    position: absolute
-    bottom: -14px
-    left: 0
-    right: 0
-    margin: 0 auto
-    content: " "
-    width: 0
-    height: 0
-    border-left: 10px solid transparent
-    border-right: 10px solid transparent
-    border-bottom: 10px solid white
+  .textshadow &
+    +text-shadow(-1px -1px 0px white)
 
 
 body
-  font-size: 14px
-  font-family: $font_text
-  color: $text_font_color
+  font:
+    size: 30px
+    family: Quicksand, sans-serif
+    weight: 300
+  line-height: 1
+  letter-spacing: -0.095em
+  color: $text_color
   position: relative
 
+  .rgba &
+    color: $text_color_alpha
+
+h1
+  +uppercase_headline()
 
 .bg
   position: fixed
@@ -48,16 +47,230 @@ body
   left: 0
   z-index: 0
 
-.wrapper
+nav
+  position: fixed
+  top: 0
+  right: 0
+  z-index: 5
+  width: 80px
+  height: 80px
+  text-align: right
+  overflow: hidden
+  +background(linear-gradient(45deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.8) 100%))
+
+  .borderradius &
+    border-radius: 50%
+    -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC) /* this fixes the overflow:hidden in Chrome/Opera */
+
+
+  .csstransitions &
+    +transition(300ms width, 300ms height, 300ms top, 300ms right)
+
+  .menu_icon
+    font-size: 40px
+    color: $text_color
+    text-decoration: none
+    position: absolute
+    display: inline-block
+    padding: 20px 24px
+    top: 0
+    right: 0
+
+    .csstransitions &
+      +transition(300ms top, 300ms right)
+    
+
+  ul
+    +clearfix()
+    position: absolute
+    top: 0
+    right: 80px
+    height: 500px
+    border-right: $dashed_border
+    padding: 20px 17px 0 0
+    margin: 0
+
+    .csstransitions &
+      +transition(300ms top, 300ms right)
+
+    li
+      a
+        white-space: nowrap
+        text-decoration: none
+        color: $text_color
+        display: inline-block
+        padding: 3px
+
+  &.open
+    width: 500px
+    height: 500px
+    top: -200px
+    right: -200px
+
+    .menu_icon
+      top: 200px
+      right: 200px
+
+    ul
+      top: 200px
+      right: 280px
+
+
+#wrapper
   z-index: 1
   position: relative
-  width: 960px
+  width: 1382px
   margin: 0 auto
 
-.header
-  font-family: $font_special
 
-  h1
-    font-size: 30px
+  .welcome
+    padding: 160px 0
+
+    .salutation
+      position: relative
+
+      &:before, &:after
+        content: ""
+        position: absolute
+        top: 140px
+        z-index: 0
+        border-bottom: $dashed_border
+
+      &:before
+        width: 150px
+        left: 10px
+
+      &:after
+        width: 693px
+        left: 211px
+
+      p
+        margin: 0
+        font-weight: 300
+        position: relative
+        z-index: 2
+
+        &.hey
+          font:
+            family: "Lobster Two"
+          font-size: 140px
+          letter-spacing: normal
+          margin-bottom: 20px
+          position: relative
+
+        &.my
+          +uppercase_headline()
+
+        &.wanna, &.or
+          letter-spacing: -0.09em
+
+        &.wanna
+          font-size: 50px
+
+        &.or
+          margin-left: 210px
+          font-size: 30px
+          letter-spacing: -0.09em
+
+      .me
+        position: absolute
+        z-index: 1
+        top: -70px
+        right: 270px
+
+        .borderradius &
+          width: 300px
+          height: 300px
+          border-radius: 50%
+          background: url(/images/me.jpg) no-repeat center center
+
+          img
+            display: none
+
+      .csstransitions.borderradius &
+        .me
+          +transition(top 300ms, right 300ms, width 300ms, height 300ms)
+
+        &:hover .me
+          top: -170px
+          right: 170px
+          width: 500px
+          height: 500px
+
+  .about
+    +clearfix()
+
+    h1
+      margin: 0 80px 20px 0
+      float: right
+
+    p
+      clear: right
+      float: right
+      width: 1024px
+      letter-spacing: -2px
+
+      &:first-letter
+        +uppercase_headline()
+        font-size: 65px
+        letter-spacing: 0.02em
+        line-height: 0.7em
+        float: left
+        padding: 10px 0 0 0
+
+  .work
+    +clearfix()
+    margin-right: -50px
+
+    .item
+      width: 300px
+      height: 300px
+      overflow: hidden
+      float: left
+      margin: 0 50px 50px 0
+      position: relative
+
+      .borderradius &
+        border-radius: 50%
+        -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC) /* this fixes the overflow:hidden in Chrome/Opera */
+
+      .description
+        width: 300px
+        height: 150px
+        position: absolute
+        background: rgba(255,255,255,0.8)
+
+        .no-touch &
+          top: 300px
+
+        .no-csstransitions &, .touch &, .no-js &
+          top: 150px
+
+        h2
+          text-align: center
+          margin: 10px 0 5px 0
+          letter-spacing: normal
+          font:
+            size: 40px
+            family: "Lobster Two"
+
+
+        .categories
+          margin: 0 auto
+          text-align: center
+          font:
+            size: 16px
+            weight: 400
+          letter-spacing: -1px
+          line-height: 1.2em
+
+        .csstransitions &
+          +transition(top 200ms ease-out)
+
+      .no-touch &:hover .description
+        top: 150px
+
+
+          
 
 
