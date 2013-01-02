@@ -165,6 +165,9 @@ class LissajousCircle
     @mouseRepulsionPath.strokeColor = "red"
     @mouseRepulsionPath.visible = false
 
+  setScrollOffset: (scrollTop) ->
+    @scrollOffset = -scrollTop * @speed
+
   listenToMouseRepulsion: () ->
     return @mouseRepulsionTimer == 0 or @mouseRepulsionTimer > 15
     
@@ -200,8 +203,6 @@ $ ->
 
   paper.view.draw()
 
-
-
   tool.onMouseMove = (e) ->
     for c in circles
       if !c.listenToMouseRepulsion()
@@ -214,22 +215,6 @@ $ ->
 
       if hitResult && hitResult.item
         c.setMouseRepulsion e.point
-        ###vectorLength = 100 - (e.point.getDistance(c.circle.position) - c.radius)
-        vector = ((c.circle.position.subtract(e.point)).normalize(vectorLength)).add(c.circle.position)
-        c.setMouseRepulsion(new paper.Path.Line(c.circle.position, vector))###
-        
-  ###
-    mousePoint = new paper.Point(e.event.x, e.event.y)
-    for c in circles
-      nearestPoint = c.circle.getNearestPoint(mousePoint)
-      pointDistance = mousePoint.getDistance(nearestPoint, false)
-      if pointDistance < 10
-        v = ((c.circle.position.subtract(mousePoint)).normalize(100 - pointDistance)).add(c.circle.position)
-        c.mouseRepulsionPath = new paper.Path.Line(c.circle.position, v)
-        c.mouseRepulsionPath.strokeColor = "black"
-        c.state = "mouseRepulsion"###
-
-
 
   paper.view.onFrame = (e) ->
     if (hueCounter += 0.1) > 360
@@ -238,9 +223,6 @@ $ ->
     for c in circles
       c.circle.position = c.getNextLocation()
       c.setHue(hueCounter)
-
-
-
 
   $(window).resize (e) ->
     console.log "resize"
@@ -260,7 +242,7 @@ $ ->
 
   $(window).scroll (e) ->
     for c in circles
-      c.scrollOffset = - $(window).scrollTop()
+      c.setScrollOffset $(window).scrollTop()
 
 
 
