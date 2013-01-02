@@ -1,14 +1,12 @@
-class TestCircle extends paper.Path
-  constructor: (radius) ->
-
-
 class LissajousCircle
   constructor: (@canvas, size, color, @wx, @wy, @omega, @lissajousPathProgress = 0, @speed = 0.5) ->
     @state = "lissajous"
     @mouseRepulsionTimer = 0
     @mouseRepulsionPathProgress = 0
     @returnPathProgress = 0
-    @returnSpeed = @speed + 0.3
+    @returnSpeed = 0
+    @returnSpeedProgress = 0
+    @scrollOffset = 0
 
     #calculate lissajous path
     @lissajousPath = new paper.Path();
@@ -58,7 +56,7 @@ class LissajousCircle
     if @returnPath?
       @returnPath.remove()
 
-    @returnPath = new paper.Path(@circle.position.clone())
+    @returnPath = new paper.Path(@circle.position.subtract([0, @scrollOffset]).clone())
     lProgress = @lissajousPathProgress
     lStart = @lissajousPathProgress
     sampleRate = 2
@@ -66,22 +64,16 @@ class LissajousCircle
     while true
       lProgress += 0.5
       lastLissajousPoint = @lissajousPath.getLocationAt(lProgress % @lissajousPath.length)
-      if not lastLissajousPoint?
-        console.log lastLissajousPoint
-        console.log lProgress
-        console.log @lissajousPath.getLocationAt(lProgress)
-        console.log @lissajousPath.length
-
       lastLissajousPoint = lastLissajousPoint.point
       lastReturnPoint = @returnPath.lastSegment.point
       newPoint = lastLissajousPoint.subtract(lastReturnPoint).normalize(sampleRate).add(lastReturnPoint)
-      @returnPath.add(newPoint)
+      @returnPath.lineTo(newPoint)
 
       if newPoint.getDistance(lastLissajousPoint) < 1
         break
 
     @returnPath.simplify()
-    #@returnPath.strokeColor = "blue"
+    #@returnPath.strokeColor = "blue" 
 
     if resetReturnPathProgress
       @returnPathProgress = 0
@@ -93,7 +85,7 @@ class LissajousCircle
     switch @state
       when "lissajous"
         @raiseLissajousPathProgress()
-        return @lissajousPath.getLocationAt(@lissajousPathProgress).point
+        return @lissajousPath.getLocationAt(@lissajousPathProgress).point.add([0, @scrollOffset])
 
       when "mouseRepulsion"
         t = @mouseRepulsionPathProgress
@@ -113,18 +105,41 @@ class LissajousCircle
           n = (c.multiply((t=t/d-1)*t*t + 1)).add(b)#(c.multiply(-Math.pow(2, -10 * t/d) + 1)).add(b)
           @mouseRepulsionPathProgress += d * 0.01
 
-        return n
+        return n.add([0, @scrollOffset])
 
       when "return"
-        @returnPathProgress += @returnSpeed
 
-        if @returnPathProgress + @returnSpeed > @returnPath.length
+        #if @returnSpeed == 0
+        #  @returnSpeed = 0.001
+        #else if @returnPathProgress <= @returnPath.length/2
+
+
+
+        #c*(t/=d)*t*t + b
+        #if ((t/=d/2) < 1) return c/2*t*t*t + b;
+        #    return c/2*((t-=2)*t*t + 2) + b;
+
+        if @returnPathProgress >= @returnPath.length 
           @state = "lissajous"
+        
+        if @returnSpeed < @speed
+          @returnSpeed += 0.01
+          
+        @returnPathProgress += @returnSpeed#d * 0.01
 
-        return @returnPath.getLocationAt(@returnPathProgress).point
+        #if @returnPath.getPointAt(@returnPathProgress) == null
+        #  console.log @returnPath.getPointAt(@returnPathProgress)
+        #  console.log @returnPathProgress
+        #  console.log @returnPath.length
+        #  console.log @returnSpeed
+        #  @returnPath.selected = true
+
+        #console.log @returnPath.getPointAt(Math.min(@returnPathProgress, @returnPath.length))
+        #console.log @returnPath.getPointAt(Math.min(@returnPathProgress, @returnPath.length)).add([0, @scrollOffset])
+        return @returnPath.getPointAt(Math.min(@returnPathProgress, @returnPath.length)).add([0, @scrollOffset])
 
       else
-        return @lissajousPath.getLocationAt(@lissajousPathProgress).point
+        return @lissajousPath.getLocationAt(@lissajousPathProgress).point.add([0, @scrollOffset])
 
   getNextHue: ->
     @circle.position.x / @canvas.width * 360
@@ -133,9 +148,16 @@ class LissajousCircle
     for s in @circle.fillColor.gradient.stops
       s.color.hue = hue
 
-  setMouseRepulsion: (path) ->
+  setMouseRepulsion: (point) ->
     @mouseRepulsionPath.remove() if @mouseRepulsionPath?
-    @mouseRepulsionPath = path
+
+    point = point.subtract([0, @scrollOffset])
+    cPosition = @circle.position.subtract([0, @scrollOffset])
+    
+    vectorLength = 100 - (point.getDistance(cPosition) - @radius)
+    vector = ((cPosition.subtract(point)).normalize(vectorLength)).add(cPosition)
+
+    @mouseRepulsionPath = new paper.Path.Line(cPosition, vector)
     @mouseRepulsionPathProgress = 0
     @mouseRepulsionTimer = 0
     @state = "mouseRepulsion"
@@ -166,7 +188,7 @@ $ ->
 
   background = new paper.Path.Rectangle(paper.view.bounds)
   background.fillColor = new paper.GradientColor new paper.Gradient(['#fff', '#f8f8f8']), new paper.Point(paper.view.bounds.width/2, 0), [paper.view.bounds.width/2, paper.view.bounds.height]
-  
+
   window.circles = [
     new LissajousCircle(canvas, 0.4, "#00AAFF", 2, 1, 3/4 * Math.PI, 4500, 0.2),
     new LissajousCircle(canvas, 0.4, "#00AAFF", 1, 3, 1/4 * Math.PI, 1000, 0.2),
@@ -191,9 +213,10 @@ $ ->
         stroke: true
 
       if hitResult && hitResult.item
-        vectorLength = 100 - (e.point.getDistance(c.circle.position) - c.radius)
+        c.setMouseRepulsion e.point
+        ###vectorLength = 100 - (e.point.getDistance(c.circle.position) - c.radius)
         vector = ((c.circle.position.subtract(e.point)).normalize(vectorLength)).add(c.circle.position)
-        c.setMouseRepulsion(new paper.Path.Line(c.circle.position, vector))
+        c.setMouseRepulsion(new paper.Path.Line(c.circle.position, vector))###
         
   ###
     mousePoint = new paper.Point(e.event.x, e.event.y)
@@ -234,6 +257,10 @@ $ ->
 
     for c in circles
       c.adjustToSize horizontalFactor, verticalFactor
+
+  $(window).scroll (e) ->
+    for c in circles
+      c.scrollOffset = - $(window).scrollTop()
 
 
 

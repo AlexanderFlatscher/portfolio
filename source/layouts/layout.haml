@@ -17,16 +17,16 @@
     /#bg-raphael.bg
     %canvas#bg_paper.bg
     /%p#fps
+    %nav.open
+      %a.menu_icon{href:"#"} &#x2630;
+      %ul
+        %li
+          %a{href:"#"} start
+        %li
+          %a{href:"#"} about me
+        %li
+          %a{href:"#"} my work
+        %li
+          %a{href:"#"} contact me
     #wrapper
-      %nav.open
-        %a.menu_icon{href:"#"} &#x2630;
-        %ul
-          %li
-            %a{href:"#"} start
-          %li
-            %a{href:"#"} about me
-          %li
-            %a{href:"#"} my work
-          %li
-            %a{href:"#"} contact me
       = yield
