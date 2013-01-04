@@ -153,7 +153,7 @@ nav
 
         &.hey
           font:
-            family: "Lobster Two"
+            family: "Lobster Two", "Times New Roman", Times, serif
           font-size: 140px
           letter-spacing: normal
           margin-bottom: 20px
@@ -270,6 +270,48 @@ nav
 
       .no-touch &:hover .description
         top: 150px
+
+  .contact
+    h1
+      margin-bottom: 20px
+
+    p.so
+      position: relative
+      font:
+        size: 50px
+
+      &:after
+        content: ""
+        position: absolute
+        border-bottom: $dashed_border
+        width: 1290px
+        bottom: -30px
+        left: 0px
+
+    p.just
+      margin-left: 190px
+      font:
+        size: 50px
+      a
+        font:
+          family: "Lobster Two", "Times New Roman", Times, serif
+        text-decoration: none
+
+        .rgba &
+          color: $text_color_alpha
+
+        .no-rgba &, .no-js &
+          color: $text_color
+
+footer
+  text-align: center
+  position: relative
+  font-size: 20px
+  margin-top: 100px
+  margin-bottom: 10px
+
+
+
 
 
           

@@ -8,7 +8,7 @@ $ ->
 
   adjustMargin()
       
-  #nav.removeClass('open')
+  nav.removeClass('open')
   nav.hover (e) ->
     nav.addClass 'open'
   , (e) ->
