@@ -1,5 +1,5 @@
 class LissajousCircle
-  constructor: (@canvas, size, color, @wx, @wy, @omega, @lissajousPathProgress = 0, @speed = 0.5) ->
+  constructor: (@canvas, size, color, @wx, @wy, @omega, @scrollFactor = 0, @verticalOffset = 0, @lissajousPathProgress = 0, @speed = 0.5) ->
     @state = "lissajous"
     @mouseRepulsionTimer = 0
     @mouseRepulsionPathProgress = 0
@@ -14,13 +14,13 @@ class LissajousCircle
     @lissajousPath.visible = false
 
     for num in [0...2*Math.PI] by 0.005
-      @lissajousPath.add new paper.Point((Math.sin(@wx*num+@omega) + 1) * @canvas.width / 2, (Math.sin(@wy*num+@omega) + 1) * @canvas.height / 2)
+      @lissajousPath.add new paper.Point((Math.sin(@wx*num+@omega) + 1) * @canvas.width / 2, ((Math.sin(@wy*num+@omega) + 1) * @canvas.height / 2) + @verticalOffset * @canvas.height)
 
     @lissajousPath.closed = true
     @lissajousPath.simplify()
 
     #draw circle
-    center = new paper.Point(0, 0)
+    center = new paper.Point(0, @verticalOffset * @canvas.height)
     @radius = size * if @canvas.width > @canvas.height then @canvas.width else @canvas.height
     @circle = new paper.Path.Circle(center, @radius)
 
@@ -108,34 +108,13 @@ class LissajousCircle
         return n.add([0, @scrollOffset])
 
       when "return"
-
-        #if @returnSpeed == 0
-        #  @returnSpeed = 0.001
-        #else if @returnPathProgress <= @returnPath.length/2
-
-
-
-        #c*(t/=d)*t*t + b
-        #if ((t/=d/2) < 1) return c/2*t*t*t + b;
-        #    return c/2*((t-=2)*t*t + 2) + b;
-
         if @returnPathProgress >= @returnPath.length 
           @state = "lissajous"
         
         if @returnSpeed < @speed
           @returnSpeed += 0.01
           
-        @returnPathProgress += @returnSpeed#d * 0.01
-
-        #if @returnPath.getPointAt(@returnPathProgress) == null
-        #  console.log @returnPath.getPointAt(@returnPathProgress)
-        #  console.log @returnPathProgress
-        #  console.log @returnPath.length
-        #  console.log @returnSpeed
-        #  @returnPath.selected = true
-
-        #console.log @returnPath.getPointAt(Math.min(@returnPathProgress, @returnPath.length))
-        #console.log @returnPath.getPointAt(Math.min(@returnPathProgress, @returnPath.length)).add([0, @scrollOffset])
+        @returnPathProgress += @returnSpeed
         return @returnPath.getPointAt(Math.min(@returnPathProgress, @returnPath.length)).add([0, @scrollOffset])
 
       else
@@ -166,7 +145,7 @@ class LissajousCircle
     @mouseRepulsionPath.visible = false
 
   setScrollOffset: (scrollTop) ->
-    @scrollOffset = -scrollTop * @speed
+    @scrollOffset = -scrollTop * @scrollFactor
 
   listenToMouseRepulsion: () ->
     return @mouseRepulsionTimer == 0 or @mouseRepulsionTimer > 15
@@ -193,12 +172,16 @@ $ ->
   background.fillColor = new paper.GradientColor new paper.Gradient(['#fff', '#f8f8f8']), new paper.Point(paper.view.bounds.width/2, 0), [paper.view.bounds.width/2, paper.view.bounds.height]
 
   window.circles = [
-    new LissajousCircle(canvas, 0.4, "#00AAFF", 2, 1, 3/4 * Math.PI, 4500, 0.2),
-    new LissajousCircle(canvas, 0.4, "#00AAFF", 1, 3, 1/4 * Math.PI, 1000, 0.2),
-    new LissajousCircle(canvas, 0.3, "#a2e0ff", 1, 4, 1/2 * 1/3 * Math.PI, 2000),
-    new LissajousCircle(canvas, 0.2, "#47c2ff", 4, 3, 1/3 * 1/4 * Math.PI),
-    new LissajousCircle(canvas, 0.1, "#4a84a1", 3, 4, 1/3 * 3/4 * Math.PI, 1000),
-    new LissajousCircle(canvas, 0.05, "#348ebb", 2, 1, Math.PI)
+    new LissajousCircle(canvas, 0.4, "#00AAFF", 2, 1, 3/4 * Math.PI, 0.2, 0.5, 4500, 0.2),
+    new LissajousCircle(canvas, 0.4, "#00AAFF", 1, 3, 1/4 * Math.PI, 0.2, 0, 1000, 0.2),
+    new LissajousCircle(canvas, 0.3, "#a2e0ff", 1, 4, 1/2 * 1/3 * Math.PI, 0.4, 0.3, 2000),
+    new LissajousCircle(canvas, 0.2, "#47c2ff", 4, 3, 1/3 * 1/4 * Math.PI, 0.5),
+    new LissajousCircle(canvas, 0.1, "#4a84a1", 3, 4, 1/3 * 3/4 * Math.PI, 0.6, 0.2, 1000),
+    #new LissajousCircle(canvas, 0.05, "#348ebb", 2, 1, Math.PI, 0.9, 0.2),
+    #new LissajousCircle(canvas, 0.05, "#348ebb", 3, 4, 1/3 * Math.PI, 0.9, 2.0, 5000, 0.6),
+    #new LissajousCircle(canvas, 0.2, "#47c2ff", 4, 3, 5/8 * Math.PI, 0.5, 1.5),
+    #new LissajousCircle(canvas, 0.1, "#4a84a1", 4, 3, 1/3 * 3/4 * Math.PI, 0.6, 1.5),
+    #new LissajousCircle(canvas, 0.3, "#a2e0ff", 2, 3, 1/2 * Math.PI, 0.4, 0.6, 2000),
   ]
 
   paper.view.draw()
@@ -217,15 +200,23 @@ $ ->
         c.setMouseRepulsion e.point
 
   paper.view.onFrame = (e) ->
-    if (hueCounter += 0.1) > 360
-      hueCounter = 0
+    #if (hueCounter += 0.1) > 360
+    #  hueCounter = 0
 
     for c in circles
       c.circle.position = c.getNextLocation()
-      c.setHue(hueCounter)
+      #c.setHue(hueCounter)
+
+    thisFrameTime = (thisLoop=new Date) - lastLoop
+    frameTime+= (thisFrameTime - frameTime) / filterStrength
+    lastLoop = thisLoop
+
+  fpsOut = document.getElementById('fps')
+  setInterval ->
+    fpsOut.innerHTML = (1000/frameTime).toFixed(1) + " fps"
+  , 1000
 
   $(window).resize (e) ->
-    console.log "resize"
     w = $(window).width()
     h = $(window).height()
 
@@ -246,14 +237,4 @@ $ ->
 
 
 
-###
-    thisFrameTime = (thisLoop=new Date) - lastLoop
-    frameTime+= (thisFrameTime - frameTime) / filterStrength
-    lastLoop = thisLoop
-
-  fpsOut = document.getElementById('fps')
-  setInterval ->
-    fpsOut.innerHTML = (1000/frameTime).toFixed(1) + " fps"
-  , 1000
-###
     
