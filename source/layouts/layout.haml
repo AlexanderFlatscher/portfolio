@@ -11,7 +11,7 @@
       = data.page.title || "The Middleman" 
     
     = stylesheet_link_tag "normalize", "all"
-    = javascript_include_tag  "//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js", "modernizr", "paper", "all"
+    = javascript_include_tag  "//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js", "modernizr", "paper", "jquery.scrollTo-1.4.3.1-min", "all"
   
   %body{:class => page_classes}
     /#bg-raphael.bg
@@ -21,13 +21,13 @@
       %a.menu_icon{href:"#"} &#x2630;
       %ul
         %li
-          %a{href:"#"} start
+          %a{href:"#welcome"} start
         %li
-          %a{href:"#"} about me
+          %a{href:"#about"} about me
         %li
-          %a{href:"#"} my work
+          %a{href:"#work"} my work
         %li
-          %a{href:"#"} contact me
+          %a{href:"#contact"} contact me
     #wrapper
       = yield
 

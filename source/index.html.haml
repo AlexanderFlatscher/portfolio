@@ -2,7 +2,7 @@
   title: Alexander Flatscher, web developer.
 ---
 
-.welcome
+#welcome.slide
   .salutation
     %p.hey
       Hey there!<br>
@@ -17,7 +17,7 @@
     .me
       = image_tag "me2.png"
 
-.about
+#about.slide
   %h1
     about me
   %p.then
@@ -27,7 +27,7 @@
   %p.like
     In the web I like to animate objects and move things around. I like fancy and colorful designs and websites with clear edges. 
 
-.work
+#work.slide
   %h1
     my work
   - data.works.each do |w|
@@ -46,11 +46,11 @@
               <br>
               -character_count -= br_step
 
-.contact
+#contact.slide
   %h1
     contact me
   %p.so
-    So you wanna know more about me<br>and my work or just get in touch?
+    So you wanna know even more about<br>me and my work or just get in touch?
   %p.just
     Just send me an email to <a href="mailto:alexander.flatscher@gmail.com">alexander.flatscher@gmail.com</a><br>or check out my <a href="https://github.com/billythetalented/">GitHub</a> repositories!
 
