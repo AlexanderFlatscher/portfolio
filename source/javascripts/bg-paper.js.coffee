@@ -30,6 +30,7 @@ class LissajousCircle
     (color1 = new paper.Color(color)).alpha = 0.5
     (color2 = new paper.Color(color)).alpha = 0.005
     @circle.fillColor = new paper.GradientColor new paper.Gradient([color1, color2]), center.add([@radius, -@radius]), center.add([-@radius, @radius])
+    @circle.position = @lissajousPath.getPointAt(@lissajousPathProgress)
 
   adjustToSize: (horizontalFactor, verticalFactor) ->
     for s in @lissajousPath.segments
@@ -156,9 +157,9 @@ class LissajousCircle
     @colorAnimation.desiredColor = @colorAnimation.initialColor.clone()
     @colorAnimation.desiredColor.hue = hue
 
-    @colorAnimation.redStep = (@colorAnimation.desiredColor.red - @colorAnimation.currentColor.red) / app.colorAnimation.end
-    @colorAnimation.greenStep = (@colorAnimation.desiredColor.green - @colorAnimation.currentColor.green) / app.colorAnimation.end
-    @colorAnimation.blueStep = (@colorAnimation.desiredColor.blue - @colorAnimation.currentColor.blue) / app.colorAnimation.end
+    @colorAnimation.redStep = (@colorAnimation.desiredColor.red - @colorAnimation.currentColor.red) / (app.colorAnimation.end - app.colorAnimation.current)
+    @colorAnimation.greenStep = (@colorAnimation.desiredColor.green - @colorAnimation.currentColor.green) / (app.colorAnimation.end - app.colorAnimation.current)
+    @colorAnimation.blueStep = (@colorAnimation.desiredColor.blue - @colorAnimation.currentColor.blue) / (app.colorAnimation.end - app.colorAnimation.current)
 
   applyColorAnimationStep: (last = false) ->
     for s in @circle.fillColor.gradient.stops
@@ -171,13 +172,54 @@ class LissajousCircle
         @colorAnimation.currentColor.green = s.color.green += @colorAnimation.greenStep
         @colorAnimation.currentColor.blue = s.color.blue += @colorAnimation.blueStep
    
+class ProgressBar
+  constructor: (canvas, height) ->
+    @progress = 0
+    @currentWidth = 0
+    @fullWidth = canvas.width
+    @fullHeight = canvas.height
+    @expandProgress = 0
+    @expandEnd = 50
+
+    progressBarPoint = new paper.Point(0, canvas.height/2 - height/2)
+    progressBarSize = new paper.Size(0, height)
+    @rectangle = new paper.Path.Rectangle(progressBarPoint, progressBarSize)
+    @rectangle.fillColor = "#00AAFF"
+    @rectangle.fillColor.alpha = 0.5
+
+  setProgress: (p) ->
+    @progress = p
+    @rectangle.segments[2].point.x = @rectangle.segments[3].point.x = @fullWidth * p/100
+
+  isFinished: ->
+    return @progress == 100
+
+  expandVertically: ->
+    if not @isFullyExpanded()
+      stepSize = @rectangle.segments[0].point.y / @expandEnd
+      @rectangle.segments[0].point.y += stepSize
+      @rectangle.segments[3].point.y += stepSize
+
+      @rectangle.segments[1].point.y -= stepSize
+      @rectangle.segments[2].point.y -= stepSize
+
+      @rectangle.opacity -= 1/@expandEnd
+      @expandProgress++
+    else
+      console.error "already fully expanded"
+
+  isFullyExpanded: ->
+    return @expandProgress == @expandEnd
+
+  destroy: ->
+    @rectangle.remove()
 
 
 $ ->
-  filterStrength = 20
+  ###filterStrength = 20
   frameTime = 0
   lastLoop = new Date
-  thisLoop = 0
+  thisLoop = 0###
 
   bgPaper = $('#bg_paper')
   bgPaper.attr
@@ -188,23 +230,77 @@ $ ->
   canvas = bgPaper[0]
   paper.setup(canvas)
 
+  #paint background
   background = new paper.Path.Rectangle(paper.view.bounds)
   background.fillColor = new paper.GradientColor new paper.Gradient(['#fff', '#f8f8f8']), new paper.Point(paper.view.bounds.width/2, 0), [paper.view.bounds.width/2, paper.view.bounds.height]
 
-  circles = [
-    new LissajousCircle(canvas, 0.4, "#00AAFF", 2, 1, 3/4 * Math.PI, 0.2, 0.5, 4500, 0.2),
-    new LissajousCircle(canvas, 0.4, "#00AAFF", 1, 3, 1/4 * Math.PI, 0.2, 0, 1000, 0.2),
-    new LissajousCircle(canvas, 0.3, "#a2e0ff", 1, 4, 1/2 * 1/3 * Math.PI, 0.4, 0.3, 2000),
-    new LissajousCircle(canvas, 0.2, "#47c2ff", 4, 3, 1/3 * 1/4 * Math.PI, 0.5),
-    new LissajousCircle(canvas, 0.1, "#4a84a1", 3, 4, 1/3 * 3/4 * Math.PI, 0.6, 0.2, 1000),
-    new LissajousCircle(canvas, 0.05, "#348ebb", 2, 1, Math.PI, 0.9, 0.2),
-    new LissajousCircle(canvas, 0.05, "#348ebb", 3, 4, 1/3 * Math.PI, 0.9, 1.5, 5000, 0.6),
-    new LissajousCircle(canvas, 0.2, "#47c2ff", 4, 3, 5/8 * Math.PI, 0.5, 1.5),
-    new LissajousCircle(canvas, 0.1, "#4a84a1", 4, 3, 1/3 * 3/4 * Math.PI, 0.6, 1.5),
-    new LissajousCircle(canvas, 0.3, "#a2e0ff", 2, 3, 1/2 * Math.PI, 0.4, 0.6, 2000),
-  ]
+  #paint progressbar
+  window.progressBar = new ProgressBar(canvas, 20)
 
   paper.view.draw()
+
+  #prepare circles
+  circles = []
+  circlesInstructions = []
+  circlesInstructions.push ->
+    circles.push new LissajousCircle(canvas, 0.4, "#00AAFF", 2, 1, 3/4 * Math.PI, 0.2, 0.5, 4500, 0.2)
+  , ->
+    circles.push new LissajousCircle(canvas, 0.4, "#00AAFF", 1, 3, 1/4 * Math.PI, 0.2, 0, 1000, 0.2)
+  , ->
+    circles.push new LissajousCircle(canvas, 0.3, "#a2e0ff", 1, 4, 1/2 * 1/3 * Math.PI, 0.4, 0.3, 2000)
+  , ->
+    circles.push new LissajousCircle(canvas, 0.2, "#47c2ff", 4, 3, 1/3 * 1/4 * Math.PI, 0.5)
+  , ->
+    circles.push new LissajousCircle(canvas, 0.1, "#4a84a1", 3, 4, 1/3 * 3/4 * Math.PI, 0.6, 0.2, 1000)
+  , ->
+    circles.push new LissajousCircle(canvas, 0.05, "#348ebb", 2, 1, Math.PI, 0.9, 0.2)
+  , ->
+    circles.push new LissajousCircle(canvas, 0.05, "#348ebb", 3, 4, 1/3 * Math.PI, 0.9, 1.5, 5000, 0.6)
+  , ->
+    circles.push new LissajousCircle(canvas, 0.2, "#47c2ff", 4, 3, 5/8 * Math.PI, 0.5, 1.5)
+  , ->
+    circles.push new LissajousCircle(canvas, 0.1, "#4a84a1", 4, 3, 1/3 * 3/4 * Math.PI, 0.6, 1.5)
+  , ->
+    circles.push new LissajousCircle(canvas, 0.3, "#a2e0ff", 2, 3, 1/2 * Math.PI, 0.4, 0.6, 2000)
+    
+
+  #define animations
+  onFrameAnimationState = "progressBar"
+  onFrameInstructions = 
+    circles: ->
+      for c in circles
+        c.circle.position = c.getNextLocation()
+        
+        ###if app.colorAnimation.isRunning()
+          if app.colorAnimation.isFirstStep()
+            c.prepareColorAnimationTo(app.backgroundHue)
+          c.applyColorAnimationStep(app.colorAnimation.isLastStep())###
+
+      app.colorAnimation.current++ if app.colorAnimation.isRunning()
+    progressBar: ->
+      console.log "progressBar"
+      circlesInstructions[circles.length]()
+      progressBar.setProgress(circles.length * 10)
+
+      if progressBar.isFinished()
+        console.log "change!!"
+        onFrameAnimationState = "removeProgressBar"
+    removeProgressBar: ->
+      this.circles()
+      console.log progressBar
+      progressBar.expandVertically()
+
+      if progressBar.isFullyExpanded()
+        console.log "expanded"
+        onFrameAnimationState = "circles"
+        progressBar.destroy()
+        delete progressBar
+
+  paper.view.onFrame = (e) ->
+    onFrameInstructions[onFrameAnimationState]()
+
+
+
 
   tool.onMouseMove = (e) ->
     for c in circles
@@ -218,26 +314,6 @@ $ ->
 
       if hitResult && hitResult.item
         c.setMouseRepulsion e.point
-
-  paper.view.onFrame = (e) ->
-    for c in circles
-      c.circle.position = c.getNextLocation()
-      
-      if app.colorAnimation.isRunning()
-        if app.colorAnimation.isFirstStep()
-          c.prepareColorAnimationTo(app.backgroundHue)
-        c.applyColorAnimationStep(app.colorAnimation.isLastStep())
-
-    app.colorAnimation.current++ if app.colorAnimation.isRunning()
-
-    thisFrameTime = (thisLoop=new Date) - lastLoop
-    frameTime+= (thisFrameTime - frameTime) / filterStrength
-    lastLoop = thisLoop
-
-  fpsOut = document.getElementById('fps')
-  setInterval ->
-    fpsOut.innerHTML = (1000/frameTime).toFixed(1) + " fps"
-  , 1000
 
   $(window).resize (e) ->
     w = $(window).width()
@@ -260,4 +336,14 @@ $ ->
 
 
 
+
+
     
+    ###thisFrameTime = (thisLoop=new Date) - lastLoop
+    frameTime+= (thisFrameTime - frameTime) / filterStrength
+    lastLoop = thisLoop
+
+  fpsOut = document.getElementById('fps')
+  setInterval ->
+    fpsOut.innerHTML = (1000/frameTime).toFixed(1) + " fps"
+  , 1000###
