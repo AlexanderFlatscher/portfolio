@@ -17,4 +17,20 @@ $ ->
   w.load centerSlides
   w.resize centerSlides
 
+  w.scroll (e) ->
+    breakpoint = w.scrollTop() + w.height()/2
+    lastTop = -1 
+    nearestSlideId = undefined
+
+    for slide in slides
+      s = $(slide)
+      top = s.position().top
+      if top > lastTop and top < breakpoint
+        lastTop = top
+        nearestSlideId = s.attr('id')
+        
+    app.activateSlideWithId(nearestSlideId) if app.activeSlide.attr('id') != nearestSlideId
+
+
+
 

@@ -7,6 +7,9 @@ class LissajousCircle
     @returnSpeed = 0
     @returnSpeedProgress = 0
     @scrollOffset = 0
+    @colorAnimation =
+      initialColor: new paper.Color(color)
+      currentColor: new paper.Color(color)
 
     #calculate lissajous path
     @lissajousPath = new paper.Path();
@@ -46,11 +49,8 @@ class LissajousCircle
     @circle.scale f
     @radius *= f
     
-  raiseLissajousPathProgress: (amount = @speed) ->
-    @lissajousPathProgress += amount
-
-    if @lissajousPathProgress > @lissajousPath.length
-      @lissajousPathProgress = @lissajousPathProgress % @lissajousPath.length
+  raiseLissajousPathProgress: (amount) ->
+    @lissajousPathProgress = (@lissajousPathProgress + amount) % @lissajousPath.length
 
   calculateReturnPath: (resetReturnPathProgress = true, setLissajousPathProgress = true) ->
     if @returnPath?
@@ -84,8 +84,9 @@ class LissajousCircle
   getNextLocation: ->
     switch @state
       when "lissajous"
-        @raiseLissajousPathProgress()
-        return @lissajousPath.getLocationAt(@lissajousPathProgress).point.add([0, @scrollOffset])
+        @raiseLissajousPathProgress(@speed)
+        #return @lissajousPath.getLocationAt(@lissajousPathProgress).point.add([0, @scrollOffset])
+        return @lissajousPath.getPointAt(@lissajousPathProgress).add([0, @scrollOffset])
 
       when "mouseRepulsion"
         t = @mouseRepulsionPathProgress
@@ -149,7 +150,27 @@ class LissajousCircle
 
   listenToMouseRepulsion: () ->
     return @mouseRepulsionTimer == 0 or @mouseRepulsionTimer > 15
-    
+
+
+  prepareColorAnimationTo: (hue) ->
+    @colorAnimation.desiredColor = @colorAnimation.initialColor.clone()
+    @colorAnimation.desiredColor.hue = hue
+
+    @colorAnimation.redStep = (@colorAnimation.desiredColor.red - @colorAnimation.currentColor.red) / app.colorAnimation.end
+    @colorAnimation.greenStep = (@colorAnimation.desiredColor.green - @colorAnimation.currentColor.green) / app.colorAnimation.end
+    @colorAnimation.blueStep = (@colorAnimation.desiredColor.blue - @colorAnimation.currentColor.blue) / app.colorAnimation.end
+
+  applyColorAnimationStep: (last = false) ->
+    for s in @circle.fillColor.gradient.stops
+      if last
+        @colorAnimation.currentColor.red = s.color.red = @colorAnimation.desiredColor.red
+        @colorAnimation.currentColor.green = s.color.green = @colorAnimation.desiredColor.green
+        @colorAnimation.currentColor.blue = s.color.blue = @colorAnimation.desiredColor.blue
+      else
+        @colorAnimation.currentColor.red = s.color.red += @colorAnimation.redStep
+        @colorAnimation.currentColor.green = s.color.green += @colorAnimation.greenStep
+        @colorAnimation.currentColor.blue = s.color.blue += @colorAnimation.blueStep
+   
 
 
 $ ->
@@ -163,7 +184,6 @@ $ ->
     width: $(window).width()
     height: $(window).height()
 
-  hueCounter = 200
   tool = new paper.Tool()
   canvas = bgPaper[0]
   paper.setup(canvas)
@@ -171,17 +191,17 @@ $ ->
   background = new paper.Path.Rectangle(paper.view.bounds)
   background.fillColor = new paper.GradientColor new paper.Gradient(['#fff', '#f8f8f8']), new paper.Point(paper.view.bounds.width/2, 0), [paper.view.bounds.width/2, paper.view.bounds.height]
 
-  window.circles = [
+  circles = [
     new LissajousCircle(canvas, 0.4, "#00AAFF", 2, 1, 3/4 * Math.PI, 0.2, 0.5, 4500, 0.2),
     new LissajousCircle(canvas, 0.4, "#00AAFF", 1, 3, 1/4 * Math.PI, 0.2, 0, 1000, 0.2),
     new LissajousCircle(canvas, 0.3, "#a2e0ff", 1, 4, 1/2 * 1/3 * Math.PI, 0.4, 0.3, 2000),
     new LissajousCircle(canvas, 0.2, "#47c2ff", 4, 3, 1/3 * 1/4 * Math.PI, 0.5),
     new LissajousCircle(canvas, 0.1, "#4a84a1", 3, 4, 1/3 * 3/4 * Math.PI, 0.6, 0.2, 1000),
-    #new LissajousCircle(canvas, 0.05, "#348ebb", 2, 1, Math.PI, 0.9, 0.2),
-    #new LissajousCircle(canvas, 0.05, "#348ebb", 3, 4, 1/3 * Math.PI, 0.9, 2.0, 5000, 0.6),
-    #new LissajousCircle(canvas, 0.2, "#47c2ff", 4, 3, 5/8 * Math.PI, 0.5, 1.5),
-    #new LissajousCircle(canvas, 0.1, "#4a84a1", 4, 3, 1/3 * 3/4 * Math.PI, 0.6, 1.5),
-    #new LissajousCircle(canvas, 0.3, "#a2e0ff", 2, 3, 1/2 * Math.PI, 0.4, 0.6, 2000),
+    new LissajousCircle(canvas, 0.05, "#348ebb", 2, 1, Math.PI, 0.9, 0.2),
+    new LissajousCircle(canvas, 0.05, "#348ebb", 3, 4, 1/3 * Math.PI, 0.9, 1.5, 5000, 0.6),
+    new LissajousCircle(canvas, 0.2, "#47c2ff", 4, 3, 5/8 * Math.PI, 0.5, 1.5),
+    new LissajousCircle(canvas, 0.1, "#4a84a1", 4, 3, 1/3 * 3/4 * Math.PI, 0.6, 1.5),
+    new LissajousCircle(canvas, 0.3, "#a2e0ff", 2, 3, 1/2 * Math.PI, 0.4, 0.6, 2000),
   ]
 
   paper.view.draw()
@@ -200,12 +220,15 @@ $ ->
         c.setMouseRepulsion e.point
 
   paper.view.onFrame = (e) ->
-    #if (hueCounter += 0.1) > 360
-    #  hueCounter = 0
-
     for c in circles
       c.circle.position = c.getNextLocation()
-      #c.setHue(hueCounter)
+      
+      if app.colorAnimation.isRunning()
+        if app.colorAnimation.isFirstStep()
+          c.prepareColorAnimationTo(app.backgroundHue)
+        c.applyColorAnimationStep(app.colorAnimation.isLastStep())
+
+    app.colorAnimation.current++ if app.colorAnimation.isRunning()
 
     thisFrameTime = (thisLoop=new Date) - lastLoop
     frameTime+= (thisFrameTime - frameTime) / filterStrength
