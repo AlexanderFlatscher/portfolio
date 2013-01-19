@@ -6,7 +6,6 @@ $ ->
     activeSlide: firstSlide
 
     activateSlideWithId: (id) ->
-      console.log "activateSlideWithId #{id}"
       s = $("##{id}")
       if s
         app.activeSlide = s
@@ -14,11 +13,10 @@ $ ->
       else
         return false
 
-    backgroundHue: firstSlide.attr('data-background-hue')
+    backgroundHue: parseFloat(firstSlide.attr('data-background-hue'))
 
     applyBackgroundHue: (hue) ->
-      console.log "applyBackgroundHue #{hue}"
-      app.backgroundHue = hue
+      app.backgroundHue = parseFloat(hue)
       app.colorAnimation.current = 0
 
     colorAnimation:

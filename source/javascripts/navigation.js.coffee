@@ -4,7 +4,7 @@ $ ->
 
   adjustMargin = ->
     nav.css 
-      marginRight: $('#wrapper').css('margin-right')
+      marginRight: Math.max(($(window).width() - $('#wrapper').width())/2, 0)
 
   adjustMargin()
       
