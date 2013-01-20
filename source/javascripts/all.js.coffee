@@ -1,5 +1,5 @@
 #= require app
-#= require bg-paper
+#= require bg_paper
 #= require navigation
 #= require slides
 

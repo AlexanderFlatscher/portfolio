@@ -1,5 +1,6 @@
 class LissajousCircle
-  constructor: (@canvas, size, hue, saturation, lightness, opacity, @wx, @wy, @omega, @scrollFactor = 0, @verticalOffset = 0, @lissajousPathProgress = 0, @speed = 0.5) ->
+  #constructor: (@canvas, size, hue, saturation, lightness, opacity, @wx, @wy, @omega, @scrollFactor = 0, @verticalOffset = 0, @lissajousPathProgress = 0, @speed = 0.5) ->
+  constructor: (@canvas, lissajousPathData, size, hue, saturation, lightness, opacity, @scrollFactor = 0, @verticalOffset = 0, @lissajousPathProgress = 0, @speed = 0.5) ->
     @state = "lissajous"
     @mouseRepulsionTimer = 0
     @mouseRepulsionPathProgress = 0
@@ -15,13 +16,21 @@ class LissajousCircle
     #calculate lissajous path
     @lissajousPath = new paper.Path();
     @lissajousPath.strokeColor = "black"
-    @lissajousPath.visible = false
+    @lissajousPath.fullySelected = true
+    #@lissajousPath.visible = false
 
-    for num in [0...2*Math.PI] by 0.005
-      @lissajousPath.add new paper.Point((Math.sin(@wx*num+@omega) + 1) * @canvas.width / 2, ((Math.sin(@wy*num+@omega) + 1) * @canvas.height / 2) + @verticalOffset * @canvas.height)
+    for s in lissajousPathData.segments
+      @lissajousPath.add new paper.Segment(s.point, s.handleIn, s.handleOut)
 
-    @lissajousPath.closed = true
-    @lissajousPath.simplify()
+    @lissajousPath.scale @canvas.width / 2000, @canvas.height / 2000, [0, 0]
+    #@lissajousPath.simplify()
+    #@lissajousPath.smooth()
+
+    #for num in [0...2*Math.PI] by 0.005
+    #  @lissajousPath.add new paper.Point((Math.sin(@wx*num+@omega) + 1) * @canvas.width / 2, ((Math.sin(@wy*num+@omega) + 1) * @canvas.height / 2) + @verticalOffset * @canvas.height)
+    #
+    #@lissajousPath.closed = true
+    #@lissajousPath.simplify()
 
     #draw circle
     center = new paper.Point(0, @verticalOffset * @canvas.height)
@@ -38,7 +47,7 @@ class LissajousCircle
     @setScrollOffset $(window).scrollTop()
 
   exportLissajousPath: ->
-    return @lissajousPath.exportSvg()
+    JSON.stringify(@lissajousPath, ['segments', 'handleIn', 'handleOut', 'point', 'x', 'y'])
 
   adjustToSize: (horizontalFactor, verticalFactor) ->
     for s in @lissajousPath.segments
@@ -94,8 +103,8 @@ class LissajousCircle
     switch @state
       when "lissajous"
         @raiseLissajousPathProgress(@speed)
-        #return @lissajousPath.getLocationAt(@lissajousPathProgress).point.add([0, @scrollOffset])
-        return @lissajousPath.getPointAt(@lissajousPathProgress).add([0, @scrollOffset])
+        return @lissajousPath.getLocationAt(@lissajousPathProgress).point.add([0, @scrollOffset])
+        #return @lissajousPath.getPointAt(@lissajousPathProgress).add([0, @scrollOffset])
 
       when "mouseRepulsion"
         t = @mouseRepulsionPathProgress
@@ -235,11 +244,6 @@ class ProgressBar
 
 
 $ ->
-  ###filterStrength = 20
-  frameTime = 0
-  lastLoop = new Date
-  thisLoop = 0###
-
   stats = new Stats()
   stats.setMode(0)
   stats.domElement.style.position = 'fixed'
@@ -269,63 +273,71 @@ $ ->
   #prepare circles
   window.circles = []
   circlesInstructions = []
-  circlesInstructions.push ->
-    circles.push new LissajousCircle(canvas, 0.4, app.backgroundHue, 1, 0.5, 0, 2, 1, 3/4 * Math.PI, 0.2, 0.5, 4500, 0.2)
-  , ->
-    circles.push new LissajousCircle(canvas, 0.4, app.backgroundHue, 1, 0.5, 0, 1, 3, 1/4 * Math.PI, 0.2, 0, 1000, 0.2)
-  , ->
-    circles.push new LissajousCircle(canvas, 0.3, app.backgroundHue, 1, 0.82, 0, 1, 4, 1/2 * 1/3 * Math.PI, 0.4, 0.3, 2000)
-  , ->
-    circles.push new LissajousCircle(canvas, 0.2, app.backgroundHue, 1, 0.64, 0, 4, 3, 1/3 * 1/4 * Math.PI, 0.5)
-  , ->
-    circles.push new LissajousCircle(canvas, 0.1, app.backgroundHue, 0.37, 0.46, 0, 3, 4, 1/3 * 3/4 * Math.PI, 0.6, 0.2, 1000)
-  , ->
-    circles.push new LissajousCircle(canvas, 0.05, app.backgroundHue, 0.56, 0.47, 0, 2, 1, Math.PI, 0.9, 0.2)
-  , ->
-    circles.push new LissajousCircle(canvas, 0.05, app.backgroundHue, 0.56, 0.47, 0, 3, 4, 1/3 * Math.PI, 0.9, 1.5, 5000, 0.6)
-  , ->
-    circles.push new LissajousCircle(canvas, 0.2, app.backgroundHue, 1, 0.64, 0, 4, 3, 5/8 * Math.PI, 0.5, 1.5)
-  , ->
-    circles.push new LissajousCircle(canvas, 0.1, app.backgroundHue, 0.37, 0.46, 0, 4, 3, 1/3 * 3/4 * Math.PI, 0.6, 1.5)
-  , ->
-    circles.push new LissajousCircle(canvas, 0.3, app.backgroundHue, 1, 0.82, 0, 2, 3, 1/2 * Math.PI, 0.4, 0.6, 2000)
+  onFrameAnimationState = onFrameInstructions = lissajousPathData = undefined
+
+  $.getJSON '/javascripts/lissajous_paths.json', (data) ->
+    lissajousPathData = data.lissajousPaths
+    console.log lissajousPathData
+
+    circlesInstructions.push ->
+    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.4, app.backgroundHue, 1, 0.5, 0, 0.2, 0.5, 4500, 0.2)
+    #, ->
+    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.4, app.backgroundHue, 1, 0.5, 0, 0.2, 0, 1000, 0.2)
+    #, ->
+    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.3, app.backgroundHue, 1, 0.82, 0, 0.4, 0.3, 2000)
+    #, ->
+    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.2, app.backgroundHue, 1, 0.64, 0, 0.5)
+    #, ->
+    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.1, app.backgroundHue, 0.37, 0.46, 0, 0.6, 0.2, 1000)
+    #, ->
+    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.05, app.backgroundHue, 0.56, 0.47, 0, 0.9, 0.2)
+    #, ->
+      circles.push new LissajousCircle(canvas, lissajousPathData[8], 0.05, app.backgroundHue, 0.56, 0.47, 0, 0.9, 1.5, 5000, 0.6)
+    #, ->
+    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.2, app.backgroundHue, 1, 0.64, 0, 0.5, 1.5)
+    #, ->
+    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.1, app.backgroundHue, 0.37, 0.46, 0, 0.6, 1.5)
+    #, ->
+    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.3, app.backgroundHue, 1, 0.82, 0, 0.4, 0.6, 2000)
     
 
-  #define animations
-  onFrameAnimationState = "progressBar"
-  onFrameInstructions = 
-    circles: ->
-      for c in circles
-        c.circle.position = c.getNextLocation()
-        
-        if app.colorAnimation.isRunning()
-          if app.colorAnimation.isFirstStep()
-            c.prepareColorAnimationTo(app.backgroundHue)
-          c.applyColorAnimationStep(app.colorAnimation.isLastStep())
+    #define animations
+    onFrameAnimationState = "progressBar"
+    onFrameInstructions = 
+      circles: ->
+        for c in circles
+          c.circle.position = c.getNextLocation()
+          
+          if app.colorAnimation.isRunning()
+            if app.colorAnimation.isFirstStep()
+              c.prepareColorAnimationTo(app.backgroundHue)
+            c.applyColorAnimationStep(app.colorAnimation.isLastStep())
 
-      app.colorAnimation.current++ if app.colorAnimation.isRunning()
+        app.colorAnimation.current++ if app.colorAnimation.isRunning()
 
-    progressBar: ->
-      circlesInstructions[circles.length]()
-      progressBar.setProgress(circles.length * 10)
+      progressBar: ->
+        circlesInstructions[circles.length]()
+        progressBar.setProgress(circles.length * 100)
 
-      if progressBar.isFinished()
-        onFrameAnimationState = "removeProgressBar"
-    removeProgressBar: ->
-      this.circles()
-      progressBar.expandVertically()
+        if progressBar.isFinished()
+          onFrameAnimationState = "removeProgressBar"
+      removeProgressBar: ->
+        this.circles()
+        progressBar.expandVertically()
 
-      for c in circles
-        c.circle.opacity = 1 - progressBar.rectangle.opacity
+        for c in circles
+          c.circle.opacity = 1 - progressBar.rectangle.opacity
 
-      if progressBar.isFullyExpanded()
-        onFrameAnimationState = "circles"
-        progressBar.destroy()
-        delete progressBar
+        if progressBar.isFullyExpanded()
+          onFrameAnimationState = "circles"
+          progressBar.destroy()
+          delete progressBar
 
   paper.view.onFrame = (e) ->
     stats.begin()
-    onFrameInstructions[onFrameAnimationState]()
+    if onFrameAnimationState?
+      #console.log onFrameAnimationState
+      onFrameInstructions[onFrameAnimationState]() 
     stats.end()
 
 
@@ -365,14 +377,44 @@ $ ->
 
 
 
+  window.stringifyAllLissajousPaths = ->
+    j = '{"lissajousPaths": ['
+    for c in circles
+      j += c.exportLissajousPath()
+      j += ","
+    j = j.substring(0, j.length - 1)
+    j += "]}"
 
+  window.calculateLissajousPaths = (canvasWidth, canvasHeight) ->
+    params = [
+      {wx: 2, wy: 1, omega: 3/4 * Math.PI},
+      {wx: 1, wy: 3, omega: 1/4 * Math.PI}, 
+      {wx: 1, wy: 4, omega: 1/2 * 1/3 * Math.PI}, 
+      {wx: 4, wy: 3, omega: 1/3 * 1/4 * Math.PI}, 
+      {wx: 3, wy: 4, omega: 1/3 * 3/4 * Math.PI}, 
+      {wx: 2, wy: 1, omega: Math.PI}, 
+      {wx: 3, wy: 4, omega: 1/3 * Math.PI}, 
+      {wx: 4, wy: 3, omega: 5/8 * Math.PI}, 
+      {wx: 4, wy: 3, omega: 1/3 * 3/4 * Math.PI}, 
+      {wx: 2, wy: 3, omega: 1/2 * Math.PI}
+    ]
 
-    
-    ###thisFrameTime = (thisLoop=new Date) - lastLoop
-    frameTime+= (thisFrameTime - frameTime) / filterStrength
-    lastLoop = thisLoop
+    j = '{"lissajousPaths": ['
+    for p in params
 
-  fpsOut = document.getElementById('fps')
-  setInterval ->
-    fpsOut.innerHTML = (1000/frameTime).toFixed(1) + " fps"
-  , 1000###
+      lissajousPath = new paper.Path();
+      lissajousPath.strokeColor = "black"
+
+      for num in [0...2*Math.PI] by 0.001 #0.005
+        lissajousPath.add new paper.Point((Math.sin(p.wx*num+p.omega) + 1) * canvasWidth / 2, ((Math.sin(p.wy*num+p.omega) + 1) * canvasHeight / 2))
+
+      lissajousPath.closed = true
+      lissajousPath.simplify()
+
+      j += JSON.stringify(lissajousPath, ['segments', 'handleIn', 'handleOut', 'point', 'x', 'y'])
+      j += ","
+
+    j = j.substring(0, j.length - 1)
+    j += "]}"
+
+    return j
