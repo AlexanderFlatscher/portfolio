@@ -1,6 +1,6 @@
 class LissajousCircle
   #constructor: (@canvas, size, hue, saturation, lightness, opacity, @wx, @wy, @omega, @scrollFactor = 0, @verticalOffset = 0, @lissajousPathProgress = 0, @speed = 0.5) ->
-  constructor: (@canvas, lissajousPathData, size, hue, saturation, lightness, opacity, @scrollFactor = 0, relativeVerticalOffset = 0, @lissajousPathProgress = 0, @speed = 10) ->
+  constructor: (@canvas, lissajousPathData, size, hue, saturation, lightness, @scrollFactor = 0, relativeVerticalOffset = 0, @lissajousPathProgress = 0, @speed = 10) ->
     @state = "lissajous"
     @verticalOffset = relativeVerticalOffset * @canvas.height
     @mouseRepulsionTimer = 0
@@ -48,8 +48,6 @@ class LissajousCircle
     #@circle.fillColor = color1
     
     @circle.position = @lissajousPath.getPointAt(@lissajousPathProgress)
-
-    #@circle.opacity = opacity
 
     @setScrollOffset $(window).scrollTop()
 
@@ -130,7 +128,7 @@ class LissajousCircle
           @mouseRepulsionTimer = 0
         else
           n = (c.multiply((t=t/d-1)*t*t + 1)).add(b)#(c.multiply(-Math.pow(2, -10 * t/d) + 1)).add(b)
-          @mouseRepulsionPathProgress += d * 0.01 * delta
+          @mouseRepulsionPathProgress += d * 0.6 * delta
 
         return n.add([0, @scrollOffset])
 
@@ -139,16 +137,13 @@ class LissajousCircle
           @state = "lissajous"
         
         if @returnSpeed < @speed
-          @returnSpeed += 0.01
+          @returnSpeed += 0.1
           
         @returnPathProgress += @returnSpeed * delta
         return @returnPath.getPointAt(Math.min(@returnPathProgress, @returnPath.length)).add([0, @scrollOffset])
 
       else
         return @lissajousPath.getLocationAt(@lissajousPathProgress).point.add([0, @scrollOffset])
-
-  getNextHue: ->
-    @circle.position.x / @canvas.width * 360
 
   setHue: (hue) ->
     for s in @circle.fillColor.gradient.stops
@@ -280,50 +275,25 @@ $ ->
 
   #prepare circles
   circles = []
-  #circlesInstructions = []
-  onFrameAnimationState = onFrameInstructions = lissajousPathData = undefined
 
   $.getJSON '/javascripts/lissajous_paths.json', (data) ->
-
-    #circlesInstructions.push ->
-    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.4, app.backgroundHue, 1, 0.5, 0, 0.2, 0.5, 4500, 0.2)
-    #, ->
-    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.4, app.backgroundHue, 1, 0.5, 0, 0.2, 0, 1000, 0.2)
-    #, ->
-    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.3, app.backgroundHue, 1, 0.82, 0, 0.4, 0.3, 2000)
-    #, ->
-    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.2, app.backgroundHue, 1, 0.64, 0, 0.5)
-    #, ->
-    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.1, app.backgroundHue, 0.37, 0.46, 0, 0.6, 0.2, 1000)
-    #, ->
-    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.05, app.backgroundHue, 0.56, 0.47, 0, 0.9, 0.2)
-    #, ->
-    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.05, app.backgroundHue, 0.56, 0.47, 0, 0.9, 1.5, 5000, 0.6)
-    #, ->
-    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.2, app.backgroundHue, 1, 0.64, 0, 0.5, 1.5)
-    #, ->
-    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.1, app.backgroundHue, 0.37, 0.46, 0, 0.6, 1.5)
-    #, ->
-    #  circles.push new LissajousCircle(canvas, lissajousPathData[circles.length], 0.3, app.backgroundHue, 1, 0.82, 0, 0.4, 0.6, 2000)
-
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.4, app.backgroundHue, 1, 0.5, 0, 0.2, 0.5, 4500, 2)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.4, app.backgroundHue, 1, 0.5, 0, 0.2, 0, 1000, 3)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.3, app.backgroundHue, 1, 0.82, 0, 0.4, 0, 3000)
-    #circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.2, app.backgroundHue, 1, 0.64, 0, 0.5)
-    #circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.1, app.backgroundHue, 0.37, 0.46, 0, 0.6, 0.4, 3000)
-    #circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.05, app.backgroundHue, 0.56, 0.47, 0, 0.9, 0.2)
-    #circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.05, app.backgroundHue, 0.56, 0.47, 0, 0.9, 1.5, 5000, 6)
-    #circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.2, app.backgroundHue, 1, 0.64, 0, 0.5, 0.9, 2000)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.1, app.backgroundHue, 0.37, 0.46, 0, 0.6, 1.3)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.3, app.backgroundHue, 1, 0.82, 0, 0.4, 0.9, 3500)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.4, app.backgroundHue, 1, 0.5, 0.2, 0.5, 4500, 5)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.4, app.backgroundHue, 1, 0.5, 0.2, 0, 1000, 5)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.3, app.backgroundHue, 1, 0.82, 0.4, 0, 3000, 8)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.3, app.backgroundHue, 1, 0.82, 0.4, 0.9, 3500, 8)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.2, app.backgroundHue, 1, 0.64, 0.5, 0, 500)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.2, app.backgroundHue, 1, 0.64, 0.5, 0.9, 2000)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.1, app.backgroundHue, 0.37, 0.46, 0.6, 0.4, 4500)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.1, app.backgroundHue, 0.37, 0.46, 0.6, 1.3)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.05, app.backgroundHue, 0.56, 0.47, 0.9, 0.2, 0, 12)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.05, app.backgroundHue, 0.56, 0.47, 0.9, 1.5, 5000, 12)
   
   #define animations
   onFrameAnimationState = "circles"
   onFrameInstructions = 
     circles: (delta) ->
       for c in circles
-        #c.circle.translate([1, 0])#.position.x++# = c.getNextLocation(delta)
-        c.getNextLocation(delta)
+        c.circle.position = c.getNextLocation(delta)
         
         if app.colorAnimation.isRunning()
           if app.colorAnimation.isFirstStep()
@@ -338,6 +308,7 @@ $ ->
 
       if progressBar.isFinished()
         onFrameAnimationState = "removeProgressBar"
+
     removeProgressBar: ->
       this.circles()
       progressBar.expandVertically()
