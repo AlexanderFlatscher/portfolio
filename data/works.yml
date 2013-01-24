@@ -1,8 +1,12 @@
 - name: Jacob Joins
   categories: [Ruby on Rails, MongoDB, Haml, Sass, CoffeeScript, Google Maps Api]
+  description: >
+    This project wants to give a pure impression of the different eating habits and cultures all over the world. The aim is to collect international recipes. The clue: three of the recipe's ingredients have to be eggs, potatoes and onions. 
 
-- name: Jacob Joins
-  categories: [Ruby on Rails, MongoDB, Haml, Sass, CoffeeScript, Google Maps Api]
+- name: s'bickt
+  categories: [Android, GeoTagging, Augmented Reality, Ruby on Rails, KML]
+  description: >
+    s'bickt (austrian dialekt for "it sticks") is a proof of concept of an augmented reality, community based app available for iOS and Android devices. It tags your messages with geodata and projects them onto the screen, when you activate the camera.
 
 - name: Jacob Joins
   categories: [Ruby on Rails, MongoDB, Haml, Sass, CoffeeScript, Google Maps Api]
