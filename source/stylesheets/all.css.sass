@@ -279,6 +279,7 @@ nav
           float: left
           font:
             size: 20px
+          letter-spacing: -2px
 
         .code, .link
           float: right
@@ -298,24 +299,31 @@ nav
             +transition(150ms background)
           a
             width: 200px
+            height: 100%
             +uppercase_headline()
             font-size: 20px
             +text_color()
             text-decoration: none
             display: inline-block
-            padding: 20px 15px
+            //padding: 20px 15px
             position: relative
             left: 0
 
             .csstransitions &
               +transition(150ms left cubic-bezier(0.250, 0.460, 0.450, 0.940))
 
+            .text
+              position: absolute
+              left: 15px
+              top: 30px
+
             .arrow
-              position: relative
-              top: -2px
+              position: absolute
+              top: 16px
+              left: 150px
               font-size: 50px
-              vertical-align: middle
-              padding-left: 80px
+              //vertical-align: middle
+              //padding-left: 80px
 
           &:hover
             .rgba &
@@ -325,12 +333,15 @@ nav
               background: #ffc423
 
             a
-              margin-right: -200px
-              left: -118px
+              left: -120px
 
         .link
+          &.not_alone
+            margin-left: -15px
+
           a
-            padding-left: 20px
+            .text
+              left: 20px
 
 
         .description

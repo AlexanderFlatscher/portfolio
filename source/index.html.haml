@@ -40,16 +40,18 @@
         %p.categories
           - w.categories.each do |c|
             = (c == w.categories.last) ? "#{c}" : "#{c}, " 
+        - if w.link.present?
+          .link{:class => ("not_alone" if w.code.present?)}
+            %a{href:"#{w.link}"}
+              %span.text
+                link
+              %span.arrow
+                >
         - if w.code.present?
           .code
             %a{href:"#{w.code}"}
-              code
-              %span.arrow
-                >
-        - if w.link.present?
-          .link
-            %a{href:"#{w.link}"}
-              link
+              %span.text
+                code
               %span.arrow
                 >
         %p.description
