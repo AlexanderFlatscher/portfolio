@@ -31,20 +31,29 @@
   %h1
     my work
   - data.works.each do |w|
-    .item
-      = image_tag "#{w.name.gsub(/[\s']/, ' ' => '_', '\'' => '').downcase}/thumb.png"
-      .description
+    %article.item
+      .image
+        = image_tag "work/#{w.name.gsub(/[\s']/, ' ' => '_', '\'' => '').downcase}.png"
+      .info
         %h2
           = w.name
         %p.categories
-          - character_count = 0
-          - br_step = 23
           - w.categories.each do |c|
-            = "#{c}, "
-            - character_count += c.length + 2
-            - if character_count >= br_step
-              <br>
-              -character_count -= br_step
+            = (c == w.categories.last) ? "#{c}" : "#{c}, " 
+        - if w.code.present?
+          .code
+            %a{href:"#{w.code}"}
+              code
+              %span.arrow
+                >
+        - if w.link.present?
+          .link
+            %a{href:"#{w.link}"}
+              link
+              %span.arrow
+                >
+        %p.description
+          = w.description
 
 %section#contact.slide{'data-background-hue' => '338.9'}
   %h1

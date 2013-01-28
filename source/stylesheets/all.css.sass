@@ -232,59 +232,111 @@ nav
 
 
   #work
-    +clearfix()
-    margin-right: -50px
 
     h1
       margin: 0 0 67px
 
     .item
-      width: 300px
-      height: 300px
-      overflow: hidden
-      float: left
-      margin: 0 50px 50px 0
       position: relative
+      min-height: 300px
+      padding-left: 50px
+      margin-bottom: 50px
 
-      .borderradius &
-        border-radius: 50%
-        -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC) /* this fixes the overflow:hidden in Chrome/Opera */
-
-      .description
-        width: 300px
-        height: 150px
+      &:before
+        content: ""
         position: absolute
-        background: rgba(255,255,255,0.8)
+        left: 0
+        right: 0
+        top: 125px
+        z-index: 2
+        border-bottom: $dashed_border
 
-        .no-touch &
-          top: 300px
+      .image
+        height: 300px
+        width: 300px
+        border-radius: 50%
+        position: absolute
+        top: 0
+        left: 50px
+        z-index: 2
+        overflow: hidden   
 
-        .no-csstransitions &, .touch &, .no-js &
-          top: 150px
+      .info
+        position: relative
+        z-index: 3
+        margin-left: 325px
 
         h2
-          text-align: center
-          margin: 10px 0 5px 0
-          letter-spacing: normal
           font:
-            size: 40px
+            size: 60px
             family: "Lobster Two"
+          margin: 50px 0 30px 0px
+          float: left
 
 
         .categories
-          margin: 0 auto
-          text-align: center
+          margin: 82px 0 10px 15px
+          float: left
           font:
-            size: 16px
-            weight: 400
-          letter-spacing: -1px
-          line-height: 1.2em
+            size: 20px
 
-        .csstransitions &
-          +transition(top 200ms ease-out)
+        .code, .link
+          float: right
+          width: 80px
+          height: 80px
+          border-radius: 50%
+          overflow: hidden
+          margin-top: 30px
 
-      .no-touch &:hover .description
-        top: 150px
+          .rgba &
+            background: rgba(229, 199, 0, 0.3)
+
+          .no-rgba &, .no-js &
+            background: #f3d199
+
+          .csstransitions &
+            +transition(150ms background)
+          a
+            width: 200px
+            +uppercase_headline()
+            font-size: 20px
+            +text_color()
+            text-decoration: none
+            display: inline-block
+            padding: 20px 15px
+            position: relative
+            left: 0
+
+            .csstransitions &
+              +transition(150ms left cubic-bezier(0.250, 0.460, 0.450, 0.940))
+
+            .arrow
+              position: relative
+              top: -2px
+              font-size: 50px
+              vertical-align: middle
+              padding-left: 80px
+
+          &:hover
+            .rgba &
+              background: rgba(229, 199, 0, 0.7)
+
+            .no-rgba &, .no-js &
+              background: #ffc423
+
+            a
+              margin-right: -200px
+              left: -118px
+
+        .link
+          a
+            padding-left: 20px
+
+
+        .description
+          margin: 10px 0 10px 0px
+          clear: left
+
 
 
   #contact
