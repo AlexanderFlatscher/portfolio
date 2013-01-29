@@ -11,3 +11,8 @@
   code: https://github.com/ihanli/sbicktAndroid
   description: >
     s'bickt (austrian dialekt for "it sticks") is a proof of concept of an augmented reality, community based app available for iOS and Android devices. It tags your messages with geodata and projects them onto the screen, when you activate the camera.
+
+- name: ToDo Web App
+  categories: [mobile, Sencha Touch, jQuery Mobile, bachelor thesis]
+  description: >
+    In the course of my first bachelor thesis I compared two technologies for the realization of mobile web apps, namely Sencha Touch and jQuery Mobile. Therefore I developed a ToDo App.
