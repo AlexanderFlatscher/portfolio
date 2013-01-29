@@ -15,8 +15,8 @@
   
   %body{:class => page_classes}
     /#bg-raphael.bg
-    %canvas#bg_paper.bg
-    %nav.open
+    /%p#fps{style:"position:fixed;"}
+    %nav
       %a.menu_icon{href:"#"} &#x2630;
       %ul
         %li
@@ -27,7 +27,8 @@
           %a{href:"#work"} my work
         %li
           %a{href:"#contact"} contact me
-    %p#fps{style:"position:fixed;"}
+    #nav_bg
+    %canvas#bg_paper.bg
     #wrapper
       = yield
 

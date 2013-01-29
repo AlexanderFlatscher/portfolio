@@ -10,6 +10,7 @@ $ ->
       if s
         app.activeSlide = s
         app.applyBackgroundHue(s.attr('data-background-hue'))
+        $('#wrapper').trigger 'sectionChange'
       else
         return false
 
