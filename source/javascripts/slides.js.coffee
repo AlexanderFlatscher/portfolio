@@ -4,15 +4,20 @@ $ ->
   w = $(window)
 
   centerSlides = () ->
-    slides.each (i, e) ->
-      element = $(e)
-      eh = element.height()
-      wh = w.height()
-      padding = if eh < wh then (wh - eh)/2 else ''
+    if wh = w.height() >= 1382 
+      slides.each (i, e) ->
+        element = $(e)
+        eh = element.height()
+        padding = if eh < wh then (wh - eh)/2 else ''
 
-      element.css
-        paddingTop: padding
-        paddingBottom: padding
+        element.css
+          paddingTop: padding
+          paddingBottom: padding
+    else
+      slides.each (i, e) ->
+        $(e).css
+          paddingTop: 0
+          paddingBottom: 0
 
   w.load centerSlides
   w.resize centerSlides

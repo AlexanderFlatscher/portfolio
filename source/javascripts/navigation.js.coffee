@@ -30,6 +30,6 @@ $ ->
 
     return false
 
-  $('#wrapper').bind 'sectionChange', ->
+  ###$('#wrapper').bind 'sectionChange', ->
     $('#nav_bg').css
-      backgroundColor: "hsl(#{(app.backgroundHue + 360 - 0) % 360 }, 100%, 10%)"
+      backgroundColor: "hsl(#{(app.backgroundHue + 360 - 0) % 360 }, 100%, 10%)"###

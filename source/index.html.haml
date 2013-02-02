@@ -21,11 +21,11 @@
   %h1
     about me
   %p.then
-    My full name is Alexander Flatscher and I live in Austria. I started (web)programming at the age of 16 with JavaScript (and   HTML table layouts... how foolish...). Now I've made my Bachelor of Science in Multi Media Technology with focus on web and communities at the University of Applied Sciences in Salzburg.
+    My full name is Alexander Flatscher and I live in Austria. I started (web-) pro&shy;gramming at the age of 16 with Java&shy;Script (and HTML table lay&shy;outs... how foolish...). Now I've made my Bachelor of Science in Multi Media Tech&shy;nology with focus on web and comm&shy;unities at the Uni&shy;versity of Applied Sciences in Salzburg.
   %p.now
-    Right now I mainly focus on developing websites and webapps with Ruby on Rails and JavaScript (with a CoffeScript flavor), although I know some other languages too, e.g. PHP, C++, Java (Android).
+    Right now I mainly focus on devel&shy;oping web&shy;sites and webapps with Ruby on Rails and Java&shy;Script (with a Coffe&shy;Script flavor), al&shy;though I know some other languages too, e.g. PHP, C++, Java (Android).
   %p.like
-    In the web I like to animate objects and move things around. I like fancy and colorful designs and websites with clear edges. 
+    In the web I like to animate objects and move things around. I like fancy and colorful designs and web&shy;sites with clear edges. 
 
 %section#work.slide{'data-background-hue' => '52'}
   %h1
@@ -40,6 +40,8 @@
         %p.categories
           - w.categories.each do |c|
             = (c == w.categories.last) ? "#{c}" : "#{c}, " 
+        %p.description
+          = w.description
         - if w.link.present?
           .link{:class => ("not_alone" if w.code.present?)}
             %a{href:"#{w.link}"}
@@ -54,15 +56,13 @@
                 code
               %span.arrow
                 >
-        %p.description
-          = w.description
 
-%section#contact.slide{'data-background-hue' => '338.9'}
+%section#contact.slide{'data-background-hue' => '339'}
   %h1
     contact me
   %p.so
     So you wanna know even more about<br>me and my work or just get in touch?
   %p.just
-    Just send me an email to <a href="mailto:alexander.flatscher@gmail.com">alexander.flatscher@gmail.com</a><br>or check out my <a href="https://github.com/billythetalented/">GitHub</a> repositories!
+    Just send me an email to <a href="mailto:alexander.flatscher@gmail.com">alexander.flatscher@gmail.com</a><br> or check out my <a href="https://github.com/billythetalented/">GitHub</a> repositories!
 
 

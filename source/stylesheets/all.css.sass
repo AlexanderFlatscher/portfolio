@@ -6,17 +6,29 @@
 @import "compass/css3/text-shadow"
 @import "compass/css3/box-shadow"
 
+
+
+
 $text_color: rgb(23, 23, 23)
 $text_color_alpha: rgba(23, 23, 23, 0.8)
 $dashed_border: 2px dashed $text_color
 $small_nav_width: 200px
+$small_nav_transition_speed: 500ms
 
-@mixin uppercase_headline
+
+
+
+@mixin small_nav_box_shadow
+  .boxshadow &
+    +box-shadow(inset 1.5em 0 1.5em -0.75em rgba(0, 0, 0, 0.2), inset 0.5em 0 0.5em -0.5em rgba(0, 0, 0, 0.2))
+
+@mixin uppercase_headline($font_size: 100px, $letter_spacing: -0.102em)
   font:
-    size: 100px
+    size: $font_size
     weight: 300
-  letter-spacing: -0.102em
+  letter-spacing: $letter_spacing
   text-transform: uppercase
+  +text_color()
 
   .textshadow &
     +text-shadow(-1px -1px 0px white)
@@ -27,13 +39,22 @@ $small_nav_width: 200px
   .no-rgba &, no-js &
     color: $text_color
 
+
+
+
 body
   font:
-    size: 20px
+    size: 16px
     family: Quicksand, sans-serif
     weight: 300
   line-height: 1
   letter-spacing: -0.095em
+  +text_color()
+
+h1
+  +uppercase_headline(70px)
+  margin: 100px 0 20px 0
+
 
 nav
   position: fixed
@@ -51,8 +72,7 @@ nav
 
   .borderradius &
     border-radius: 50%
-    //-webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC) /* this fixes the overflow:hidden in Chrome/Opera */
-
+    //-webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC) /* this fixes the overflow:hidden in Chrome */
 
   .menu_icon
     font-size: 40px
@@ -66,42 +86,74 @@ nav
 
   ul
     position: absolute
-    left: 70px
+    left: 55px
     top: 0px
     width: $small_nav_width
     margin: 0
     padding: 60px 0 0 10px
 
+    .csstransitions &
+      +transition($small_nav_transition_speed left)
+
     li
-      padding: 10px 0
-      text-align: right
-      //border-bottom: $dashed_border
-      //border-bottom-color: white
+      margin-bottom: 20px
+
       a
-        color: rgba(255,255,255,0.5)
-        +text-shadow(-2px -2px 0 rgba(0,0,0,0.8))
-        text-decoration: none
-        font-size: 30px
+        font:
+          size: 25px
+          weight: 300
+        text:
+          decoration: none
+          transform: uppercase
+        letter-spacing: -2px
         display: inline-block
+        padding: 10px
+        padding-left: 20px
+        +small_nav_box_shadow()
+
+        .rgba &
+          color: rgba(255,255,255,0.85)
+
+        .no-rgba &, .no-js &
+          color: white
+
+        .textshadow &
+          +text-shadow(-1px -1px 1px rgba(0,0,0,0.8))
+
+        .csstransitions &
+          +transition(100ms padding-left)
+
+        &:hover, &:active
+          padding-left: 30px
+
+        &.welcome
+          background: #0a415c
+
+        &.about
+          background: #0f4d0f
+
+        &.work
+          background: #80721a
+
+        &.contact
+          background: #7f193d
 
   &.open
     ul
-      left: 70 - $small_nav_width
+      left: 55 - $small_nav_width
 
 #nav_bg
-  //background: url(/images/linen_pattern.jpg)
-  background-color: hsla(195, 100%, 40%, 0.8)
+  background: url(/images/light_linen_pattern.jpg)
   position: fixed
   top: 0
   bottom: 0
   right: - $small_nav_width
   width: $small_nav_width
 
-  .boxshadow &
-    +box-shadow(inset 1.5em 0 1.5em -0.75em rgba(0, 0, 0, 0.25))
+  +small_nav_box_shadow()
 
   .csstransitions &
-    +transition(500ms background-color)
+    +transition(500ms background-color, $small_nav_transition_speed right)
 
   nav.open ~ &
     right: 0
@@ -114,6 +166,9 @@ nav
   left: 0
   z-index: 0
 
+  .csstransitions &
+    +transition($small_nav_transition_speed left, $small_nav_transition_speed right)
+
   nav.open ~ &
     left: - $small_nav_width
     right: $small_nav_width
@@ -122,20 +177,207 @@ nav
   z-index: 1
   position: relative
 
+  .csstransitions &
+    +transition($small_nav_transition_speed left)
+
   nav.open ~ &
     left: - $small_nav_width
 
+  .slide
+    padding-left: 10px
+    padding-right: 10px
 
+#about
+  h1
+    float: right
+    margin-right: 10px
+
+  p
+    clear: right
+
+    &:first-letter
+      +uppercase_headline(65px)
+      letter-spacing: 0.02em
+      line-height: 0.7em
+      float: left
+      padding: 10px 0 0 0
+
+#work
+  .item
+    margin: 40px 0
+    position: relative
+
+    &:before
+      content: ""
+      position: absolute
+      border-bottom: $dashed_border
+      width: 100%
+      top: 290px
+
+    .image
+      text-align: center
+      width: 300px
+      height: 300px
+      position: relative
+      margin: 0 auto
+
+      .borderradius &
+        border-radius: 50%
+        overflow: hidden
+
+      &:after
+        content: ""
+        position: absolute
+        top: 170px
+        bottom: 0
+        left: 0
+        right: 0
+
+        .rgba &
+          background: rgba(255,255,255,0.8)
+        .no-rgba &, .no-js &
+          background: white
+
+    .info
+      margin-top: -125px
+      position: relative
+      +clearfix()
+
+      h2
+        font:
+          size: 40px
+          family: "Lobster Two"
+        text-align: center
+        margin: 0 0 10px
+
+      .categories
+        text-align: center
+        width: 190px
+        margin: 0 auto
+        font-weight: 400
+
+      .description
+        margin-top: 30px
+
+      .code, .link
+        float: right
+        width: 80px
+        height: 80px
+        border-radius: 50%
+        overflow: hidden
+
+        .rgba &
+          background: rgba(229, 199, 0, 0.3)
+
+        .no-rgba &, .no-js &
+          background: #f3d199
+
+        .csstransitions &
+          +transition(150ms background)
+        a
+          width: 200px
+          height: 100%
+          display: inline-block
+          position: relative
+          left: 0
+          text-decoration: none
+          +uppercase_headline(20px)
+          +text_color()
+
+          .csstransitions &
+            +transition(150ms left cubic-bezier(0.250, 0.460, 0.450, 0.940))
+
+          .text
+            position: absolute
+            left: 15px
+            top: 30px
+
+          .arrow
+            position: absolute
+            top: 16px
+            left: 150px
+            font-size: 50px
+            //vertical-align: middle
+            //padding-left: 80px
+
+        &:hover, &:active
+          .rgba &
+            background: rgba(229, 199, 0, 0.7)
+
+          .no-rgba &, .no-js &
+            background: #ffc423
+
+          a
+            left: -120px
+
+      .link
+        &.not_alone
+          margin-left: -15px
+
+        a
+          .text
+            left: 20px
+
+#contact
+  p
+    font-size: 25px
+    margin: 30px 0
+
+    br
+      display: none
+
+    &.so
+      position: relative
+
+      &:after
+        content: ""
+        position: absolute
+        border-bottom: $dashed_border
+        width: 100%
+        bottom: -17px
+        left: 0px
+
+    &.just
+      text-align: right
+
+      a
+        font:
+          family: "Lobster Two", "Times New Roman", Times, serif
+        text-decoration: none
+
+        .rgba &
+          color: $text_color_alpha
+
+        .no-rgba &, .no-js &
+          color: $text_color
+
+
+
+
+@media (min-width: 480px)
+  nav
+    .menu_icon
+      background: red
+@media (min-width: 600px)
+  nav
+    .menu_icon
+      background: blue
+@media (min-width: 768px)
+  nav
+    .menu_icon
+      background: green
+@media (min-width: 992px)
+  nav
+    .menu_icon
+      background: pink
 
 @media (min-width: 1382px)
   body
     font:
       size: 30px
-    position: relative
-    +text_color()
 
   h1
-    +uppercase_headline()
+    font-size: 100px
 
   nav
     width: 80px
@@ -297,8 +539,7 @@ nav
         letter-spacing: -2px
 
         &:first-letter
-          +uppercase_headline()
-          font-size: 65px
+          +uppercase_headline(65px)
           letter-spacing: 0.02em
           line-height: 0.7em
           float: left
@@ -343,7 +584,6 @@ nav
           h2
             font:
               size: 60px
-              family: "Lobster Two"
             margin: 50px 0 30px 0px
             float: left
 
@@ -374,14 +614,12 @@ nav
             a
               width: 200px
               height: 100%
-              +uppercase_headline()
-              font-size: 20px
-              +text_color()
-              text-decoration: none
               display: inline-block
-              //padding: 20px 15px
               position: relative
               left: 0
+              text-decoration: none
+              +uppercase_headline(20px)
+              +text_color()
 
               .csstransitions &
                 +transition(150ms left cubic-bezier(0.250, 0.460, 0.450, 0.940))
