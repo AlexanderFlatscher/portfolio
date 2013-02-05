@@ -187,6 +187,57 @@ nav
     padding-left: 10px
     padding-right: 10px
 
+#welcome
+  overflow: hidden
+
+  .salutation
+    text-align: center
+
+    .me
+      margin-top: 10px
+      margin-bottom: -50px
+
+    p
+      margin: 0 0 20px
+
+      &.hey
+        font:
+          family: "Lobster Two", "Times New Roman", Times, serif
+        font-size: 80px
+        letter-spacing: normal
+        position: relative
+
+        &:after
+          content: ""
+          position: absolute
+          bottom: -8px
+          left: 10px
+          right: 10px
+          border-bottom: $dashed_border
+
+      &.my
+        +uppercase_headline(40px)
+        position: relative
+
+        &:after
+          content: ""
+          position: absolute
+          bottom: -12px
+          left: 10px
+          right: 10px
+          border-bottom: $dashed_border
+
+      &.wanna, &.or
+        letter-spacing: -0.09em
+        display: inline
+
+      &.wanna
+        font-size: 30px
+        margin-bottom: 0px
+
+      &.or
+        font-size: 20px
+
 #about
   h1
     float: right
@@ -352,8 +403,6 @@ nav
           color: $text_color
 
 
-
-
 @media (min-width: 480px)
   nav
     .menu_icon
@@ -483,7 +532,6 @@ nav
             font-size: 140px
             letter-spacing: normal
             margin-bottom: 20px
-            position: relative
 
           &.my
             +uppercase_headline()
