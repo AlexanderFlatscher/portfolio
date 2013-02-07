@@ -10,23 +10,23 @@
     %p.hey
       Hey there!<br>
     %p.my
-      My name is <span>Alex</span> and
+      My name is Alex and<br class="and_break">
       I'm a web developer.
     %p.wanna
       Wanna know more about me? Just scroll!
     %p.or
-      (or use the navigation &#x2630; in the right upper corner...)
+      (or use the navigation <span class="icon">&#xe000;</span> in the right upper corner...)
 
 
 %section#about.slide{'data-background-hue' => '120'}
   %h1
     about me
-  %p.then
-    My full name is Alexander Flatscher and I live in Austria. I started (web-) pro&shy;gramming at the age of 16 with Java&shy;Script (and HTML table lay&shy;outs... how foolish...). Now I've made my Bachelor of Science in Multi Media Tech&shy;nology with focus on web and comm&shy;unities at the Uni&shy;versity of Applied Sciences in Salzburg.
-  %p.now
-    Right now I mainly focus on devel&shy;oping web&shy;sites and webapps with Ruby on Rails and Java&shy;Script (with a Coffe&shy;Script flavor), al&shy;though I know some other languages too, e.g. PHP, C++, Java (Android).
-  %p.like
-    In the web I like to animate objects and move things around. I like fancy and colorful designs and web&shy;sites with clear edges. 
+  %p.then.hyphenate
+    My full name is Alexander Flatscher and I live in Austria. I started (web-) programming at the age of 16 with JavaScript (and HTML table layouts... how foolish...). Now I've made my Bachelor of Science in Multi Media Technology with focus on web and communities at the University of Applied Sciences in Salzburg.
+  %p.now.hyphenate
+    Right now I mainly focus on developing websites and webapps with Ruby on Rails and JavaScript (with a CoffeScript flavor), although I know some other languages too, e.g. PHP, C++, Java (Android).
+  %p.like.hyphenate
+    In the web I like to animate objects and move things around. I like fancy and colorful designs and websites with clear edges. 
 
 %section#work.slide{'data-background-hue' => '52'}
   %h1
@@ -41,7 +41,7 @@
         %p.categories
           - w.categories.each do |c|
             = (c == w.categories.last) ? "#{c}" : "#{c}, " 
-        %p.description
+        %p.description.hyphenate
           = w.description
         - if w.link.present?
           .link{:class => ("not_alone" if w.code.present?)}

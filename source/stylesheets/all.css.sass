@@ -13,7 +13,16 @@ $text_color: rgb(23, 23, 23)
 $text_color_alpha: rgba(23, 23, 23, 0.8)
 $dashed_border: 2px dashed $text_color
 $small_nav_width: 200px
-$small_nav_transition_speed: 500ms
+$small_nav_transition_speed: 200ms
+
+
+@font-face
+  font-family: 'icomoon'
+  src: url('/fonts/icomoon.eot')
+  src: url('/fonts/icomoon.eot?#iefix') format("embedded-opentype"), url('/fonts/icomoon.woff') format("woff"), url('/fonts/icomoon.ttf') format("truetype"), url('/fonts/icomoon.svg#icomoon') format("svg")
+  font-weight: normal
+  font-style: normal
+
 
 
 
@@ -39,7 +48,16 @@ $small_nav_transition_speed: 500ms
   .no-rgba &, no-js &
     color: $text_color
 
+@mixin justify_if_js($alt: left)
+  .js &
+    text-align: justify
 
+  .no-js &
+    text-align: $alt
+
+
+.icon
+  font-family: icomoon
 
 
 body
@@ -57,43 +75,65 @@ h1
 
 
 nav
-  position: fixed
-  top: 5px
-  right: 5px
   z-index: 5
-  width: 60px
-  height: 60px
+  background: url(/images/light_linen_pattern.jpg)
+  position: fixed
+  top: 0
+  bottom: 0
+  right: - $small_nav_width
+  width: $small_nav_width
 
-  .rgba &
-    background: rgba(255,255,255,0.4)
+  +small_nav_box_shadow()
 
-  .no-js &, .no-rgba &
-    background: white
+  .csstransitions.csstransforms &
+    +transition-property(transform)
+    +transition-duration($small_nav_transition_speed)
 
-  .borderradius &
-    border-radius: 50%
-    //-webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC) /* this fixes the overflow:hidden in Chrome */
+  .nav_open.csstransforms &
+    +translateX(- $small_nav_width)
+  .nav_open.no-csstransforms &, no-js &
+    right: 0
 
   .menu_icon
     font-size: 40px
     text-decoration: none
     position: absolute
+    z-index: 1
     display: inline-block
-    padding: 10px 12px
-    top: 0
-    right: 0
+    width: 60px
+    height: 60px
+    top: 5px
+    left: -65px
+    overflow: hidden
+    white-space: nowrap
     +text_color()
+    -webkit-tap-highlight-color: rgba(0,0,0,0)
+    
+    .rgba &
+      background: rgba(255,255,255,0.4)
+    .no-rgba &, .no-js &
+      background: white
+
+    .borderradius &
+      border-radius: 50%
+      //-webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC) /* this fixes the overflow:hidden in Chrome */
+
+    .icon, .close
+      display: inline-block
+
+    .icon
+      padding: 7px 100px 0 11px
+
+      .nav_open &
+        margin-left: -132px
+
+    .close
+      padding-top: 5px
+
 
   ul
-    position: absolute
-    left: 55px
-    top: 0px
-    width: $small_nav_width
     margin: 0
-    padding: 60px 0 0 10px
-
-    .csstransitions &
-      +transition($small_nav_transition_speed left)
+    padding: 60px 0 0
 
     li
       margin-bottom: 20px
@@ -123,7 +163,7 @@ nav
         .csstransitions &
           +transition(100ms padding-left)
 
-        &:hover, &:active
+        &:hover, &:focus
           padding-left: 30px
 
         &.welcome
@@ -138,49 +178,35 @@ nav
         &.contact
           background: #7f193d
 
-  &.open
-    ul
-      left: 55 - $small_nav_width
-
-#nav_bg
-  background: url(/images/light_linen_pattern.jpg)
-  position: fixed
-  top: 0
-  bottom: 0
-  right: - $small_nav_width
-  width: $small_nav_width
-
-  +small_nav_box_shadow()
-
-  .csstransitions &
-    +transition(500ms background-color, $small_nav_transition_speed right)
-
-  nav.open ~ &
-    right: 0
 
 .bg
   position: fixed
   top: 0
-  right: 0
-  bottom: 0
   left: 0
+  bottom: 0
+  width: 100%
   z-index: 0
 
-  .csstransitions &
-    +transition($small_nav_transition_speed left, $small_nav_transition_speed right)
+  .csstransitions.csstransforms &
+    +transition-property(transform)
+    +transition-duration($small_nav_transition_speed)
 
-  nav.open ~ &
+  .nav_open.csstransforms &
+    +translateX(- $small_nav_width)
+  .nav_open.no-csstransforms &, no-js &
     left: - $small_nav_width
-    right: $small_nav_width
 
 #wrapper
   z-index: 1
   position: relative
 
-  .csstransitions &
-    +transition($small_nav_transition_speed left)
+  .csstransitions.csstransforms &
+    +transition-property(transform)
+    +transition-duration($small_nav_transition_speed)
 
-  nav.open ~ &
+  .nav_open.csstransforms &
+    +translateX(- $small_nav_width)
+  .nav_open.no-csstransforms &, no-js &
     left: - $small_nav_width
 
   .slide
@@ -219,6 +245,9 @@ nav
         +uppercase_headline(40px)
         position: relative
 
+        .and_break
+          display: none
+
         &:after
           content: ""
           position: absolute
@@ -245,6 +274,8 @@ nav
 
   p
     clear: right
+    +justify_if_js
+    +clearfix
 
     &:first-letter
       +uppercase_headline(65px)
@@ -252,6 +283,7 @@ nav
       line-height: 0.7em
       float: left
       padding: 10px 0 0 0
+
 
 #work
   .item
@@ -275,6 +307,7 @@ nav
       .borderradius &
         border-radius: 50%
         overflow: hidden
+        -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC) /* this fixes the overflow:hidden in Chrome */
 
       &:after
         content: ""
@@ -309,6 +342,7 @@ nav
 
       .description
         margin-top: 30px
+        +justify_if_js
 
       .code, .link
         float: right
@@ -351,7 +385,7 @@ nav
             //vertical-align: middle
             //padding-left: 80px
 
-        &:hover, &:active
+        &:hover, &:focus
           .rgba &
             background: rgba(229, 199, 0, 0.7)
 
@@ -411,21 +445,20 @@ footer
 
 
 @media (min-width: 480px)
-  nav
-    .menu_icon
-      background: red
+  #welcome
+    .salutation
+      p.my
+        .and_break
+          display: inherit
 @media (min-width: 600px)
-  nav
-    .menu_icon
-      background: blue
+  body
+    background: blue
 @media (min-width: 768px)
-  nav
-    .menu_icon
-      background: green
+  body
+    background: green
 @media (min-width: 992px)
-  nav
-    .menu_icon
-      background: pink
+  body
+    background: pink
 
 @media (min-width: 1382px)
   body

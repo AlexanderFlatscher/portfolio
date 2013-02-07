@@ -2,7 +2,7 @@ class LissajousCircle
   #constructor: (@canvas, size, hue, saturation, lightness, opacity, @wx, @wy, @omega, @scrollFactor = 0, @verticalOffset = 0, @lissajousPathProgress = 0, @speed = 0.5) ->
   constructor: (@canvas, lissajousPathData, size, hue, saturation, lightness, @scrollFactor = 0, relativeVerticalOffset = 0, @lissajousPathProgress = 0, @speed = 10) ->
     @state = "lissajous"
-    @verticalOffset = relativeVerticalOffset * @canvas.height
+    @verticalOffset = relativeVerticalOffset * ($('body').height() / 4)
     @mouseRepulsionTimer = 0
     @mouseRepulsionPathProgress = 0
     @returnPathProgress = 0
@@ -27,15 +27,8 @@ class LissajousCircle
 
     @lissajousPath.closed = true
 
-    @lissajousPath.scale @canvas.width / 1000, @canvas.height / 1000, [0, 0]
-    #@lissajousPath.simplify()
-    #@lissajousPath.smooth()
-
-    #for num in [0...2*Math.PI] by 0.005
-    #  @lissajousPath.add new paper.Point((Math.sin(@wx*num+@omega) + 1) * @canvas.width / 2, ((Math.sin(@wy*num+@omega) + 1) * @canvas.height / 2) + @verticalOffset * @canvas.height)
-    #
-    #@lissajousPath.closed = true
-    #@lissajousPath.simplify()
+    #@lissajousPath.scale @canvas.width / 1000, @canvas.height / 1000, [0, 0]
+    @lissajousPath.scale $('body').width() / 1000, $('body').height() / 4 / 1000, [0, 0]
 
     #draw circle
     center = new paper.Point(0, @verticalOffset)
@@ -167,7 +160,9 @@ class LissajousCircle
     @mouseRepulsionPath.visible = false
 
   setScrollOffset: (scrollTop) ->
-    @scrollOffset = -scrollTop * @scrollFactor
+    @scrollOffset = @verticalOffset - scrollTop * @scrollFactor
+    #console.log @scrollOffset
+
 
   listenToMouseRepulsion: () ->
     return @mouseRepulsionTimer == 0 or @mouseRepulsionTimer > 15
@@ -247,20 +242,20 @@ class ProgressBar
 
 
 $ ->
-  ###stats = new Stats()
+  return
+  stats = new Stats()
   stats.setMode(0)
   stats.domElement.style.position = 'fixed'
   stats.domElement.style.left = '0px'
   stats.domElement.style.top = '0px'
   stats.domElement.style.letterSpacing = '0px'
-  document.body.appendChild(stats.domElement)###
+  document.body.appendChild(stats.domElement)
 
   bgPaper = $('#bg_paper')
   bgPaper.attr
     width: $(window).width()
     height: $(window).height()
 
-  tool = new paper.Tool()
   canvas = bgPaper[0]
   paper.setup(canvas)
 
@@ -277,15 +272,15 @@ $ ->
   circles = []
 
   $.getJSON '/javascripts/lissajous_paths.json', (data) ->
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.4, app.backgroundHue, 1, 0.5, 0.2, 0.5, 4500, 5)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.4, app.backgroundHue, 1, 0.5, 0.2, 0, 1000, 5)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.3, app.backgroundHue, 1, 0.82, 0.4, 0, 3000, 8)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.3, app.backgroundHue, 1, 0.82, 0.4, 0.9, 3500, 8)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.2, app.backgroundHue, 1, 0.64, 0.5, 0, 500)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.2, app.backgroundHue, 1, 0.64, 0.5, 0.9, 2000)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.1, app.backgroundHue, 0.37, 0.46, 0.6, 0.4, 4500)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.1, app.backgroundHue, 0.37, 0.46, 0.6, 1.3)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.05, app.backgroundHue, 0.56, 0.47, 0.9, 0.2, 0, 12)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.4,  app.backgroundHue, 1,    0.5,  0.2, 0.35, 4500, 5)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.4,  app.backgroundHue, 1,    0.5,  0.2, 0,   1000, 5)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.3,  app.backgroundHue, 1,    0.82, 0.4, 0,   3000, 8)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.3,  app.backgroundHue, 1,    0.82, 0.4, 0.9, 3500, 8)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.2,  app.backgroundHue, 1,    0.64, 0.5, 0,   500)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.2,  app.backgroundHue, 1,    0.64, 0.5, 0.9, 2000)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.1,  app.backgroundHue, 0.37, 0.46, 0.6, 0.4, 4500)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.1,  app.backgroundHue, 0.37, 0.46, 0.6, 1.3)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.05, app.backgroundHue, 0.56, 0.47, 0.9, 0.2, 0,    12)
     circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.05, app.backgroundHue, 0.56, 0.47, 0.9, 1.5, 5000, 12)
   
   #define animations
@@ -322,23 +317,24 @@ $ ->
         delete progressBar
 
   paper.view.onFrame = (e) ->
-    #stats.begin()
+    stats.begin()
     onFrameInstructions[onFrameAnimationState](e.delta) 
-    #stats.end()
+    stats.end()
 
+  if not $('html').hasClass 'touch'
+    tool = new paper.Tool()
+    tool.onMouseMove = (e) ->
+      for c in circles
+        if !c.listenToMouseRepulsion()
+          continue
 
-  tool.onMouseMove = (e) ->
-    for c in circles
-      if !c.listenToMouseRepulsion()
-        continue
+        hitResult = c.circle.hitTest e.point,
+          tolerance: 50
+          fill: true
+          stroke: true
 
-      hitResult = c.circle.hitTest e.point,
-        tolerance: 50
-        fill: true
-        stroke: true
-
-      if hitResult && hitResult.item
-        c.setMouseRepulsion e.point
+        if hitResult && hitResult.item
+          c.setMouseRepulsion e.point
 
   $(window).resize (e) ->
     w = $(window).width()

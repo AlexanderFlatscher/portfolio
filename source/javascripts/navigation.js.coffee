@@ -1,7 +1,10 @@
 
 $ ->
+  
+
   nav = $('nav')
   icon = nav.children('.menu_icon').first()
+  html = $('html')
 
   adjustMargin = ->
     nav.css 
@@ -9,17 +12,43 @@ $ ->
 
   adjustMargin()
 
-  if $('body').hasClass 'touch'
-    icon.click (e) ->
-      if nav.hasClass 'open' then nav.removeClass 'open' else nav.addClass 'open'
+  icon.click (e) ->
+    return false
+
+  ###icon.bind
+    touchstart: ->
+      console.log "touchstart"
+      icon.css
+        background: 'red'
+    touchend: ->
+      console.log "touchend"
+      icon.css
+        background: 'blue'
+    touchleave: ->
+      console.log "touchleave"
+      icon.css
+        background: 'green'
+    touchcancel: ->
+      console.log "touchcancel"
+      icon.css
+        background: 'yellow'###
+
+  if html.hasClass 'touch'
+    icon.bind "click", (e) ->
+      console.log "click"
+      if html.hasClass 'nav_open' then html.removeClass 'nav_open' else html.addClass 'nav_open'
+      #return false
 
   else
     nav.hover (e) ->
-      nav.addClass 'open'
+      html.addClass 'nav_open'
     , (e) ->
-      nav.removeClass 'open'
+      html.removeClass 'nav_open'
 
   $(window).resize adjustMargin
+  ###$(window).load ->
+    if window.location.hash
+      $.scrollTo window.location.hash, 500###
 
   links = $('ul li a', nav)
   links.click (e) ->

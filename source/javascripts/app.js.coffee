@@ -1,3 +1,17 @@
+Modernizr.load
+  test: Modernizr.touch
+  yep: "/javascripts/fastclick.min.js"
+  callback: (result, key) ->
+    if result
+      console.log "fastclick loaded"
+      $ ->
+        $('.fastclick').each ->
+          console.log "fastclick"
+          new FastClick(this)
+    else
+      console.log "no touch"
+
+
 $ ->
   firstSlide = $('.slide').first()
 
