@@ -7,8 +7,9 @@ $ ->
   html = $('html')
 
   adjustMargin = ->
-    nav.css 
-      marginRight: Math.max(($(window).width() - $('#wrapper').width())/2, 0)
+    if $(window).width() >= 600
+      nav.css 
+        marginRight: Math.max(($(window).width() - $('#wrapper').width())/2, 0)
 
   adjustMargin()
 
