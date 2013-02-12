@@ -284,7 +284,7 @@ nav
     padding-bottom: 1px /* for cropped g */
 
     &:first-letter
-      +uppercase_headline(65px)
+      +uppercase_headline(50px)
       letter-spacing: 0.02em
       line-height: 0.7em
       float: left
@@ -656,6 +656,10 @@ footer
           width: 500px
           height: 500px
 
+  #about
+    p:first-letter
+      font-size: 65px
+
   #work
     .item
       min-height: 300px
@@ -711,7 +715,6 @@ footer
 @media (min-width: 768px)
   body
     font-size: 24px
-    background: green
 
   #wrapper
     .slide
@@ -765,13 +768,79 @@ footer
     font-size: 30px
     background: pink
 
+  h1
+    font-size: 100px
+    margin: 150px 0 50px 0
+
+  #wrapper
+    .slide 
+      padding-left: 30px
+      padding-right: 30px
+
+  #welcome
+    .salutation
+
+      &:before, &:after
+        top: 240px
+
+      &:before
+        content: ""
+        position: absolute
+        border-bottom: $dashed_border
+        z-index: 0
+        width: 150px
+        left: 10px
+
+      &:after
+        width: 693px
+        left: 211px
+
+      p
+        &.hey
+          font-size: 140px
+
+        &.my
+          font-size: 90px
+
+        &.wanna
+          font-size: 48px
+
+        &.or
+          font-size: 28px
+          margin-left: 222px
+
+      .me
+        right: auto
+        left: 665px
+
+      .csstransitions.borderradius &
+        .me
+          +transition(top 300ms, left 300ms, width 300ms, height 300ms)
+
+        &:hover .me
+          right: auto
+          left: 565px
+
+
+  #about
+    +clearfix
+    
+    p
+      max-width: 1024px
+      float: right
+      margin-top: 0
+      overflow: visible
+
+  #work .item .info .categories
+    font-size: 18px
+
+  #contact
+    p
+      font-size: 48px
+
   footer
     font-size: 18px
     margin-bottom: 7px
-
-  #about
-    p
-      max-width: 1024px
 
 
 
@@ -866,7 +935,7 @@ footer
         &:before, &:after
           content: ""
           position: absolute
-          top: 140px
+          top: 240px
           z-index: 0
           border-bottom: $dashed_border
 
@@ -908,7 +977,7 @@ footer
         .me
           position: absolute
           z-index: 1
-          top: -70px
+          top: 30px
           right: 270px
 
           .borderradius &
@@ -925,7 +994,7 @@ footer
             +transition(top 300ms, right 300ms, width 300ms, height 300ms)
 
           &:hover .me
-            top: -170px
+            top: -70px
             right: 170px
             width: 500px
             height: 500px
