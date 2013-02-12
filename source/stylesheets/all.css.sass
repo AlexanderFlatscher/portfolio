@@ -281,6 +281,7 @@ nav
     clear: right
     +justify_if_js
     +clearfix
+    padding-bottom: 1px /* for cropped g */
 
     &:first-letter
       +uppercase_headline(65px)
@@ -455,6 +456,7 @@ footer
       p.my
         .and_break
           display: inherit
+
 @media (min-width: 600px)
   body
     font-size: 20px
@@ -555,6 +557,8 @@ footer
         +transition(300ms top, 300ms right)
 
       li
+        margin-bottom: 15px
+
         a
           white-space: nowrap
           display: inline-block
@@ -706,6 +710,7 @@ footer
 
 @media (min-width: 768px)
   body
+    font-size: 24px
     background: green
 
   #wrapper
@@ -713,9 +718,65 @@ footer
       padding-left: 20px
       padding-right: 20px
 
+  #welcome
+    .salutation
+
+      &:after
+        top: 224px
+
+      .me
+        right: 50px
+
+      p
+        &.hey
+          font-size: 120px
+
+        &.my
+          font-size: 70px
+
+        &.wanna
+          font-size: 35px
+
+        &.or
+          font-size: 24px
+
+      .csstransitions.borderradius &
+        &:hover .me
+          right: -50px
+
+  #work
+    .item
+      .info
+        h2
+          margin-top: 20px
+
+  #contact
+    p
+      font-size: 35px
+
+      &.so
+        padding-right: 8%
+        
+      &.just
+        padding-left: 8%
+
 @media (min-width: 992px)
   body
+    font-size: 30px
     background: pink
+
+  footer
+    font-size: 18px
+    margin-bottom: 7px
+
+  #about
+    p
+      max-width: 1024px
+
+
+
+
+    
 
 @media (min-width: 1382px)
   body
