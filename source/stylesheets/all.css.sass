@@ -766,7 +766,6 @@ footer
 @media (min-width: 992px)
   body
     font-size: 30px
-    background: pink
 
   h1
     font-size: 100px
@@ -821,7 +820,6 @@ footer
           right: auto
           left: 565px
 
-
   #about
     +clearfix
     
@@ -835,346 +833,102 @@ footer
     font-size: 18px
 
   #contact
+    +clearfix
+
     p
-      font-size: 48px
+      font-size: 42px
+      margin: 50px 0
+
+      br
+        display: inherit
+
+      &.so
+        padding-right: 0
+
+        &:after
+          bottom: -30px
+
+      &.just
+        padding-left: 0
 
   footer
     font-size: 18px
     margin-bottom: 7px
 
-
-
-
     
 
 @media (min-width: 1382px)
-  body
-    font:
-      size: 30px
-
-  h1
-    font-size: 100px
-
-  nav
-    width: 80px
-    height: 80px
-    margin: 20px 20px 0 0
-    text-align: right
-    overflow: hidden
-    //+background(linear-gradient(45deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.3) 100%))
-
-    .csstransitions &
-      +transition(300ms width, 300ms height, 300ms top, 300ms right, 300ms background)
-
-    .menu_icon
-      font-size: 40px
-      text-decoration: none
-      position: absolute
-      display: inline-block
-      padding: 20px 24px
-      top: 0
-      right: 0
-      +text_color()
-
-      .csstransitions &
-        +transition(300ms top, 300ms right)
-      
-
-    ul
-      +clearfix()
-      position: absolute
-      top: -20px
-      right: 80px
-      height: 500px
-      border-right: $dashed_border
-      padding: 40px 17px 0 0
-      margin: 0
-
-      .csstransitions &
-        +transition(300ms top, 300ms right)
-
-      li
-        a
-          white-space: nowrap
-          text-decoration: none
-          display: inline-block
-          padding: 3px
-          +text_color()
-
-    &.open, .no-js &
-      width: 500px
-      height: 500px
-      top: -200px
-      right: -200px
-
-      .rgba &
-        background: rgba(255,255,255,0.8)
-
-      .menu_icon
-        top: 200px
-        right: 200px
-
-      ul
-        top: 180px
-        right: 280px
-
-
   #wrapper
     width: 1382px
     margin: 0 auto
 
     .slide
-      padding: 100px 0
+      padding-left: 40px
+      padding-left: 40px
 
 
-    #welcome
-
-      .salutation
-        position: relative
-
-        &:before, &:after
-          content: ""
-          position: absolute
-          top: 240px
-          z-index: 0
-          border-bottom: $dashed_border
-
-        &:before
-          width: 150px
-          left: 10px
-
-        &:after
-          width: 693px
-          left: 211px
-
-        p
-          margin: 0
-          font-weight: 300
-          position: relative
-          z-index: 2
-
-          &.hey
-            font:
-              family: "Lobster Two", "Times New Roman", Times, serif
-            font-size: 140px
-            letter-spacing: normal
-            margin-bottom: 20px
-
-          &.my
-            +uppercase_headline()
-
-          &.wanna, &.or
-            letter-spacing: -0.09em
-
-          &.wanna
-            font-size: 50px
-
-          &.or
-            margin-left: 210px
-            font-size: 30px
-            letter-spacing: -0.09em
-
-        .me
-          position: absolute
-          z-index: 1
-          top: 30px
-          right: 270px
-
-          .borderradius &
-            width: 300px
-            height: 300px
-            border-radius: 50%
-            background: url(/images/me.jpg) no-repeat center center
-
-            img
-              display: none
-
-        .csstransitions.borderradius &
-          .me
-            +transition(top 300ms, right 300ms, width 300ms, height 300ms)
-
-          &:hover .me
-            top: -70px
-            right: 170px
-            width: 500px
-            height: 500px
-
-
-    #about
-      +clearfix()
-
-      h1
-        margin: 0 80px 20px 0
-        float: right
-
+  #welcome
+    .salutation
       p
-        clear: right
-        float: right
-        width: 1024px
-        letter-spacing: -2px
+        margin: 0
 
-        &:first-letter
-          +uppercase_headline(65px)
-          letter-spacing: 0.02em
-          line-height: 0.7em
-          float: left
-          padding: 10px 0 0 0
+        &.hey
+          margin-bottom: 20px
+
+        &.my
+          font-size: 100px
+
+        &.wanna, &.or
+          letter-spacing: -0.09em
+
+        &.wanna
+          font-size: 50px
+
+        &.or
+          margin-left: 210px
+          font-size: 30px
+          letter-spacing: -0.09em
+
+      .me
+        left: 810px
+
+      .csstransitions.borderradius &
+        &:hover .me
+          left: 710px
 
 
-    #work
+  #work
+    .item
+      .info
 
-      h1
-        margin: 0 0 67px
+        h2
+          font-size: 60px
 
-      .item
-        position: relative
-        min-height: 300px
-        padding-left: 50px
-        margin-bottom: 50px
+        .categories
+          font-size: 20px
+          letter-spacing: -2px
 
-        &:before
-          content: ""
+        .links
           position: absolute
-          left: 0
+          top: 20px
           right: 0
-          top: 125px
-          z-index: 2
-          border-bottom: $dashed_border
-
-        .image
-          height: 300px
-          width: 300px
-          border-radius: 50%
-          position: absolute
-          top: 0
-          left: 50px
-          z-index: 2
-          overflow: hidden   
-
-        .info
-          position: relative
-          z-index: 3
-          margin-left: 325px
-
-          h2
-            font:
-              size: 60px
-            margin: 50px 0 30px 0px
-            float: left
 
 
-          .categories
-            margin: 82px 0 10px 15px
-            float: left
-            font:
-              size: 20px
-            letter-spacing: -2px
+  #contact
+    p
+      font-size: 50px
 
-          .code, .link
-            float: right
-            width: 80px
-            height: 80px
-            border-radius: 50%
-            overflow: hidden
-            margin-top: 30px
-
-            .rgba &
-              background: rgba(229, 199, 0, 0.3)
-
-            .no-rgba &, .no-js &
-              background: #f3d199
-
-            .csstransitions &
-              +transition(150ms background)
-            a
-              width: 200px
-              height: 100%
-              display: inline-block
-              position: relative
-              left: 0
-              text-decoration: none
-              +uppercase_headline(20px)
-              +text_color()
-
-              .csstransitions &
-                +transition(150ms left cubic-bezier(0.250, 0.460, 0.450, 0.940))
-
-              .text
-                position: absolute
-                left: 15px
-                top: 30px
-
-              .arrow
-                position: absolute
-                top: 16px
-                left: 150px
-                font-size: 50px
-                //vertical-align: middle
-                //padding-left: 80px
-
-            &:hover
-              .rgba &
-                background: rgba(229, 199, 0, 0.7)
-
-              .no-rgba &, .no-js &
-                background: #ffc423
-
-              a
-                left: -120px
-
-          .link
-            &.not_alone
-              margin-left: -15px
-
-            a
-              .text
-                left: 20px
-
-
-          .description
-            margin: 10px 0 10px 0px
-            clear: left
-
-
-
-    #contact
-      h1
-        margin: 0 0 20px
-
-      p.so
-        position: relative
-        font:
-          size: 50px
-
+      &.so
         &:after
-          content: ""
-          position: absolute
-          border-bottom: $dashed_border
-          width: 1290px
           bottom: -30px
           left: 0px
 
-      p.just
+      &.just
         margin-left: 190px
-        font:
-          size: 50px
-        a
-          font:
-            family: "Lobster Two", "Times New Roman", Times, serif
-          text-decoration: none
-
-          .rgba &
-            color: $text_color_alpha
-
-          .no-rgba &, .no-js &
-            color: $text_color
 
 
   footer
-    text-align: center
-    position: relative
     font-size: 20px
-    margin-top: -30px
     margin-bottom: 10px
 
 

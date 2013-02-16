@@ -43,26 +43,28 @@
             = (c == w.categories.last) ? "#{c}" : "#{c}, " 
         %p.description.hyphenate
           = w.description
-        - if w.link.present?
-          .link{:class => ("not_alone" if w.code.present?)}
-            %a{href:"#{w.link}"}
-              %span.text
-                link
-              %span.arrow
-                >
-        - if w.code.present?
-          .code
-            %a{href:"#{w.code}"}
-              %span.text
-                code
-              %span.arrow
-                >
+        - if w.link.present? or w.code.present?
+          .links
+            - if w.link.present?
+              .link{:class => ("not_alone" if w.code.present?)}
+                %a{href:"#{w.link}"}
+                  %span.text
+                    link
+                  %span.arrow
+                    >
+            - if w.code.present?
+              .code
+                %a{href:"#{w.code}"}
+                  %span.text
+                    code
+                  %span.arrow
+                    >
 
 %section#contact.slide{'data-background-hue' => '339'}
   %h1
     contact me
   %p.so
-    So you wanna know even more about<br>me and my work or just get in touch?
+    So you wanna know even more about me and <br>my work or just get in touch?
   %p.just
     Just send me an email to <a class="hyphenate" href="mailto:alexander.flatscher@gmail.com">alexander.flatscher@gmail.com</a><br> or check out my <a href="https://github.com/billythetalented/">GitHub</a> repositories!
 
