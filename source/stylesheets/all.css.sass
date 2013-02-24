@@ -75,6 +75,11 @@ body
   letter-spacing: -0.095em
   +text_color()
 
+//.no-canvas, .no-js
+body
+  background: url(/images/no_canvas_bg_599.png) center top repeat-y
+
+
 h1
   +uppercase_headline(70px)
   margin: 100px 0 20px 0
@@ -185,6 +190,7 @@ nav
 
 
 .bg
+  display: none
   position: fixed
   top: 0
   left: 0
@@ -458,6 +464,11 @@ footer
           display: inherit
 
 @media (min-width: 600px)
+  
+  //.no-canvas, .no-js
+  body
+    background: url(/images/no_canvas_bg_991.png) center top repeat-y
+
   body
     font-size: 20px
 
@@ -767,6 +778,11 @@ footer
   body
     font-size: 30px
 
+  //.no-canvas, .no-js
+  body
+    background: url(/images/no_canvas_bg_1600.png) center top repeat-y
+
+
   h1
     font-size: 100px
     margin: 150px 0 50px 0
@@ -858,6 +874,7 @@ footer
     
 
 @media (min-width: 1382px)
+
   #wrapper
     width: 1382px
     margin: 0 auto

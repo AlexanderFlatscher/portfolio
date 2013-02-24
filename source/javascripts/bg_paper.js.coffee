@@ -21,8 +21,6 @@ class LissajousCircle
 
     for s in lissajousPathData.segments
       s.point.y += @verticalOffset
-      s.handleIn.y += @verticalOffset
-      s.handleOut.y += @verticalOffset
       @lissajousPath.add new paper.Segment(s.point, s.handleIn, s.handleOut)
 
     @lissajousPath.closed = true
@@ -161,7 +159,6 @@ class LissajousCircle
 
   setScrollOffset: (scrollTop) ->
     @scrollOffset = @verticalOffset - scrollTop * @scrollFactor
-    #console.log @scrollOffset
 
 
   listenToMouseRepulsion: () ->
@@ -242,7 +239,7 @@ class ProgressBar
 
 
 $ ->
-  return
+  console.log $('body').height()
   stats = new Stats()
   stats.setMode(0)
   stats.domElement.style.position = 'fixed'
@@ -272,9 +269,9 @@ $ ->
   circles = []
 
   $.getJSON '/javascripts/lissajous_paths.json', (data) ->
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.4,  app.backgroundHue, 1,    0.5,  0.2, 0.35, 4500, 5)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.4,  app.backgroundHue, 1,    0.5,  0.2, 0,   1000, 5)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.3,  app.backgroundHue, 1,    0.82, 0.4, 0,   3000, 8)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.4,  app.backgroundHue, 1,    0.5,  0.2, 0.2, 4000, 5)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.4,  app.backgroundHue, 1,    0.5,  0.2, 0.4, 2000, 5)
+    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.3,  app.backgroundHue, 1,    0.82, 0.4, 0.2, 4500, 8)
     circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.3,  app.backgroundHue, 1,    0.82, 0.4, 0.9, 3500, 8)
     circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.2,  app.backgroundHue, 1,    0.64, 0.5, 0,   500)
     circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.2,  app.backgroundHue, 1,    0.64, 0.5, 0.9, 2000)
