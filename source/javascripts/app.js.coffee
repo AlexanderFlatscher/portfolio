@@ -1,15 +1,17 @@
 Modernizr.load
+  load: '/javascripts/hyphenator.js', 
+,
   test: Modernizr.touch
   yep: "/javascripts/fastclick.min.js"
   callback: (result, key) ->
     if result
-      console.log "fastclick loaded"
       $ ->
         $('.fastclick').each ->
           console.log "fastclick"
           new FastClick(this)
-    else
-      console.log "no touch"
+###,
+  test: Modernizr.canvas
+  yep: "/javascripts/paper.js"###
 
 
 $ ->

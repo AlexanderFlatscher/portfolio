@@ -1,5 +1,7 @@
+if !Modernizr.canvas #do nothing if canvas isn't available
+  return
+
 class LissajousCircle
-  #constructor: (@canvas, size, hue, saturation, lightness, opacity, @wx, @wy, @omega, @scrollFactor = 0, @verticalOffset = 0, @lissajousPathProgress = 0, @speed = 0.5) ->
   constructor: (@canvas, lissajousPathData, size, hue, saturation, lightness, @scrollFactor = 0, relativeVerticalOffset = 0, @lissajousPathProgress = 0, @speed = 10) ->
     @state = "lissajous"
     @verticalOffset = relativeVerticalOffset * ($('body').height() / 4)
@@ -239,14 +241,13 @@ class ProgressBar
 
 
 $ ->
-  console.log $('body').height()
-  stats = new Stats()
+  ###stats = new Stats()
   stats.setMode(0)
   stats.domElement.style.position = 'fixed'
   stats.domElement.style.left = '0px'
   stats.domElement.style.top = '0px'
   stats.domElement.style.letterSpacing = '0px'
-  document.body.appendChild(stats.domElement)
+  document.body.appendChild(stats.domElement)###
 
   bgPaper = $('#bg_paper')
   bgPaper.attr
@@ -314,9 +315,9 @@ $ ->
         delete progressBar
 
   paper.view.onFrame = (e) ->
-    stats.begin()
+    #stats.begin()
     onFrameInstructions[onFrameAnimationState](e.delta) 
-    stats.end()
+    #stats.end()
 
   if not $('html').hasClass 'touch'
     tool = new paper.Tool()
