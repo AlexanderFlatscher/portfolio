@@ -3,6 +3,9 @@ $ ->
   icon = nav.children('.menu_icon').first()
   html = $('html')
 
+  toggleNav = ->
+    if html.hasClass 'nav_open' then html.removeClass 'nav_open' else html.addClass 'nav_open'
+
   adjustMargin = ->
     if $(window).width() >= 600
       nav.css 
@@ -15,7 +18,7 @@ $ ->
 
   if html.hasClass 'touch'
     icon.bind "click", (e) ->
-      if html.hasClass 'nav_open' then html.removeClass 'nav_open' else html.addClass 'nav_open'
+      toggleNav()
       return false
 
   else
@@ -28,6 +31,7 @@ $ ->
 
   links = $('ul li a', nav)
   links.click (e) ->
+    toggleNav() if html.hasClass 'touch'
     hash = $(e.target).attr('href')
     $.scrollTo hash, 500
       onAfter: ->
