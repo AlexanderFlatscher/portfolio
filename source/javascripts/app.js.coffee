@@ -25,7 +25,7 @@ $ ->
       s = $("##{id}")
       if s
         app.activeSlide = s
-        app.applyBackgroundHue(s.attr('data-background-hue'))
+        app.applyBackgroundHue(parseFloat(s.attr('data-background-hue')))
         $('#wrapper').trigger 'sectionChange'
       else
         return false
@@ -33,10 +33,11 @@ $ ->
     backgroundHue: parseFloat(firstSlide.attr('data-background-hue'))
 
     applyBackgroundHue: (hue) ->
-      app.backgroundHue = parseFloat(hue)
-      app.colorAnimation.current = 0
+      app.backgroundHue = hue
+      $(window).trigger $.Event('backgroundHueChange', {hue: hue})
+      #app.colorAnimation.current = 0
 
-    colorAnimation:
+    ###colorAnimation:
       current: 0
       end: 50
       isRunning: () ->
@@ -44,4 +45,4 @@ $ ->
       isFirstStep: () ->
         return app.colorAnimation.current == 0
       isLastStep: () ->
-        return app.colorAnimation.current == (app.colorAnimation.end - 1)
+        return app.colorAnimation.current == (app.colorAnimation.end - 1)###

@@ -1,20 +1,127 @@
 if !Modernizr.canvas #do nothing if canvas isn't available
   return
 
+
+class LissajousCircleManager
+  constructor: (@canvas) ->
+    @lissajousCircles = []
+    @circleSymbols = 
+      biggest:  new CircleSymbol(@canvas, 0.4, app.backgroundHue, 1, 0.5)
+      big:      new CircleSymbol(@canvas, 0.3, app.backgroundHue, 1, 0.82) 
+      medium:   new CircleSymbol(@canvas, 0.2, app.backgroundHue, 1, 0.64) 
+      small:    new CircleSymbol(@canvas, 0.1, app.backgroundHue, 0.37, 0.46) 
+      smallest: new CircleSymbol(@canvas, 0.05, app.backgroundHue, 0.56, 0.47)
+
+    window.test = @circleSymbols
+
+    @colorAnimation = 
+      current: 50
+      end: 50
+      running: false
+
+
+  adjustToSize: (horizontalFactor, verticalFactor) ->
+    for lc in @lissajousCircles
+      lc.adjustToSize horizontalFactor, verticalFactor
+
+    for size, cs of @circleSymbols
+      cs.adjustToSize horizontalFactor, verticalFactor
+
+  applyNextAnimationStep: (delta) ->
+    for lc in @lissajousCircles
+      lc.circle.position = lc.getNextLocation(delta)
+
+    if @colorAnimation.running
+      last = @colorAnimation.current == @colorAnimation.end
+      for size, cs of @circleSymbols
+        cs.applyColorAnimationStep(last)
+
+      if last
+        @colorAnimation.running = false
+      else
+        @colorAnimation.current++
+
+  createLissajousCircle: (size, lissajousPathData, scrollFactor, relativeVerticalOffset, lissajousPathProgress, speed) ->
+    @lissajousCircles.push new LissajousCircle(@circleSymbols[size], lissajousPathData, scrollFactor, relativeVerticalOffset, lissajousPathProgress, speed)
+
+  changeHue: (hue) ->
+    @colorAnimation.running = true
+    @colorAnimation.current = 0
+    for size, cs of @circleSymbols
+      cs.prepareColorAnimation(hue, @colorAnimation.end)
+
+  mouseRepulsion: (point) ->
+    for lc in @lissajousCircles
+      if !lc.listenToMouseRepulsion()
+        continue
+
+      hitResult = lc.circle.hitTest point,
+        tolerance: 50
+        fill: true
+        stroke: true
+
+      if hitResult && hitResult.item
+        lc.setMouseRepulsion point
+
+  setScrollOffset: (top) ->
+    for lc in @lissajousCircles
+      lc.setScrollOffset(top)
+
+
+    
+
+
+class CircleSymbol extends paper.Symbol
+  constructor: (@canvas, size, hue, saturation, lightness) ->
+    @colorAnimation =
+      currentColor: new paper.HslColor(hue, saturation, lightness)
+      desiredColor: new paper.HslColor(hue, saturation, lightness)
+
+    radius = size * if @canvas.width > @canvas.height then @canvas.width else @canvas.height
+    center = new paper.Point(0,0)
+    circlePath = new paper.Path.Circle(center, radius)
+    color1 = new paper.HslColor(hue, saturation, lightness, 0.5)
+    color2 = new paper.HslColor(hue, saturation, lightness, 0.005)
+    circlePath.fillColor = new paper.GradientColor new paper.Gradient([color1, color2]), center.add([radius, -radius]), center.add([-radius, radius])
+
+    super circlePath
+
+  adjustToSize: (horizontalFactor, verticalFactor) ->
+    f = if @canvas.width > @canvas.height then horizontalFactor else verticalFactor
+    @definition.scale f
+
+  applyColorAnimationStep: (last) ->
+    for s in @definition.fillColor.gradient.stops
+      if last
+        @colorAnimation.currentColor.red = s.color.red = @colorAnimation.desiredColor.red
+        @colorAnimation.currentColor.green = s.color.green = @colorAnimation.desiredColor.green
+        @colorAnimation.currentColor.blue = s.color.blue = @colorAnimation.desiredColor.blue
+      else
+        @colorAnimation.currentColor.red = s.color.red += @colorAnimation.redStep
+        @colorAnimation.currentColor.green = s.color.green += @colorAnimation.greenStep
+        @colorAnimation.currentColor.blue = s.color.blue += @colorAnimation.blueStep
+
+  prepareColorAnimation: (hue, end) ->
+    @colorAnimation.desiredColor.hue = hue
+
+    @colorAnimation.redStep = (@colorAnimation.desiredColor.red - @colorAnimation.currentColor.red) / end
+    @colorAnimation.greenStep = (@colorAnimation.desiredColor.green - @colorAnimation.currentColor.green) / end
+    @colorAnimation.blueStep = (@colorAnimation.desiredColor.blue - @colorAnimation.currentColor.blue) / end
+
+
+
+
+
 class LissajousCircle
-  constructor: (@canvas, lissajousPathData, size, hue, saturation, lightness, @scrollFactor = 0, relativeVerticalOffset = 0, @lissajousPathProgress = 0, @speed = 10) ->
+  constructor: (symbol, lissajousPathData, @scrollFactor = 0, @relativeVerticalOffset = 0, @lissajousPathProgress = 0, @speed = 10) ->
     @state = "lissajous"
-    @verticalOffset = relativeVerticalOffset * ($('body').height() / 4)
+    @verticalOffset = @relativeVerticalOffset * ($('body').height() / 4) * @scrollFactor
     @mouseRepulsionTimer = 0
     @mouseRepulsionPathProgress = 0
     @returnPathProgress = 0
     @returnSpeed = 0
     @returnSpeedProgress = 0
     @scrollOffset = 0
-    @colorAnimation =
-      initialColor: new paper.HslColor(hue, saturation, lightness)
-      currentColor: new paper.HslColor(hue, saturation, lightness)
-      desiredColor: new paper.HslColor(hue, saturation, lightness)
 
     #calculate lissajous path
     @lissajousPath = new paper.Path();
@@ -26,26 +133,13 @@ class LissajousCircle
       @lissajousPath.add new paper.Segment(s.point, s.handleIn, s.handleOut)
 
     @lissajousPath.closed = true
-
-    #@lissajousPath.scale @canvas.width / 1000, @canvas.height / 1000, [0, 0]
     @lissajousPath.scale $('body').width() / 1000, $('body').height() / 4 / 1000, [0, 0]
 
-    #draw circle
-    center = new paper.Point(0, @verticalOffset)
-    @radius = size * if @canvas.width > @canvas.height then @canvas.width else @canvas.height
-    @circle = new paper.Path.Circle(center, @radius)
-
-    color1 = new paper.HslColor(hue, saturation, lightness, 0.5)
-    color2 = new paper.HslColor(hue, saturation, lightness, 0.005)
-    @circle.fillColor = new paper.GradientColor new paper.Gradient([color1, color2]), center.add([@radius, -@radius]), center.add([-@radius, @radius])
-    #@circle.fillColor = color1
-    
-    @circle.position = @lissajousPath.getPointAt(@lissajousPathProgress)
+    #place circle symbol
+    @circle = symbol.place @lissajousPath.getPointAt(@lissajousPathProgress)
 
     @setScrollOffset $(window).scrollTop()
 
-  exportLissajousPath: ->
-    JSON.stringify(@lissajousPath, ['segments', 'handleIn', 'handleOut', 'point', 'x', 'y'])
 
   adjustToSize: (horizontalFactor, verticalFactor) ->
     for s in @lissajousPath.segments
@@ -60,11 +154,15 @@ class LissajousCircle
         s.handleOut.x *= horizontalFactor
         s.handleOut.y *= verticalFactor
 
-    f = if @canvas.width > @canvas.height then horizontalFactor else verticalFactor
+    @verticalOffset = @relativeVerticalOffset * ($('body').height() / 4) * @scrollFactor
+    @lissajousPath.position = [0, @verticalOffset]
 
-    @circle.scale f
-    @radius *= f
-    
+    if @state == "return"
+      @calculateReturnPath()
+
+  exportLissajousPath: ->
+    JSON.stringify(@lissajousPath, ['segments', 'handleIn', 'handleOut', 'point', 'x', 'y'])
+
   raiseLissajousPathProgress: (amount) ->
     newProgress = @lissajousPathProgress + amount
     @lissajousPathProgress = if newProgress < @lissajousPath.length then newProgress else 0
@@ -138,116 +236,39 @@ class LissajousCircle
       else
         return @lissajousPath.getLocationAt(@lissajousPathProgress).point.add([0, @scrollOffset])
 
-  setHue: (hue) ->
-    for s in @circle.fillColor.gradient.stops
-      s.color.hue = hue
-
   setMouseRepulsion: (point) ->
     @mouseRepulsionPath.remove() if @mouseRepulsionPath?
 
     point = point.subtract([0, @scrollOffset])
     cPosition = @circle.position.subtract([0, @scrollOffset])
     
-    vectorLength = 100 - (point.getDistance(cPosition) - @radius)
+    vectorLength = 100 - (point.getDistance(cPosition) - @circle.bounds.width/2)
     vector = ((cPosition.subtract(point)).normalize(vectorLength)).add(cPosition)
 
     @mouseRepulsionPath = new paper.Path.Line(cPosition, vector)
+    @mouseRepulsionPath.strokeColor = "red"
+    @mouseRepulsionPath.visible = false
     @mouseRepulsionPathProgress = 0
     @mouseRepulsionTimer = 0
     @state = "mouseRepulsion"
 
-    @mouseRepulsionPath.strokeColor = "red"
-    @mouseRepulsionPath.visible = false
-
   setScrollOffset: (scrollTop) ->
-    @scrollOffset = @verticalOffset - scrollTop * @scrollFactor
-
+    @scrollOffset = -scrollTop * @scrollFactor
 
   listenToMouseRepulsion: () ->
     return @mouseRepulsionTimer == 0 or @mouseRepulsionTimer > 15
 
 
-  prepareColorAnimationTo: (hue) ->
-    @colorAnimation.desiredColor.hue = hue
-
-    @colorAnimation.redStep = (@colorAnimation.desiredColor.red - @colorAnimation.currentColor.red) / (app.colorAnimation.end - app.colorAnimation.current)
-    @colorAnimation.greenStep = (@colorAnimation.desiredColor.green - @colorAnimation.currentColor.green) / (app.colorAnimation.end - app.colorAnimation.current)
-    @colorAnimation.blueStep = (@colorAnimation.desiredColor.blue - @colorAnimation.currentColor.blue) / (app.colorAnimation.end - app.colorAnimation.current)
-
-  applyColorAnimationStep: (last = false) ->
-    if not @colorAnimation.currentColor.equals(@colorAnimation.desiredColor)
-      for s in @circle.fillColor.gradient.stops
-        if last
-          @colorAnimation.currentColor.red = s.color.red = @colorAnimation.desiredColor.red
-          @colorAnimation.currentColor.green = s.color.green = @colorAnimation.desiredColor.green
-          @colorAnimation.currentColor.blue = s.color.blue = @colorAnimation.desiredColor.blue
-        else
-          @colorAnimation.currentColor.red = s.color.red += @colorAnimation.redStep
-          @colorAnimation.currentColor.green = s.color.green += @colorAnimation.greenStep
-          @colorAnimation.currentColor.blue = s.color.blue += @colorAnimation.blueStep
-   
-class ProgressBar
-  constructor: (canvas, height) ->
-    @progress = 0
-    @currentWidth = 0
-    @fullWidth = canvas.width
-    @fullHeight = canvas.height
-    @expandProgress = 0
-    @expandEnd = 50
-
-    progressBarPoint = new paper.Point(0, canvas.height/2 - height/2)
-    progressBarSize = new paper.Size(0, height)
-    @rectangle = new paper.Path.Rectangle(progressBarPoint, progressBarSize)
-    @rectangle.fillColor = "#00AAFF"
-    @rectangle.fillColor.alpha = 0.5
-
-  setProgress: (p) ->
-    @progress = p
-    @setRectangleWidth(@fullWidth * p/100)
-
-  setRectangleWidth: (width) ->
-    @rectangle.segments[2].point.x = @rectangle.segments[3].point.x = width
-
-  adjustToSize: (hor, ver) ->
-    currentWidth = @rectangle.segments[2].point.x
-    @setRectangleWidth(currentWidth * hor)
-    @fullWidth *= hor
-
-    @fullHeight *= ver
-    @rectangle.position.y *= ver
-
-  isFinished: ->
-    return @progress == 100
-
-  expandVertically: ->
-    if not @isFullyExpanded()
-      stepSize = (@fullHeight - 20) / 2 / @expandEnd
-      @rectangle.segments[0].point.y += stepSize
-      @rectangle.segments[3].point.y += stepSize
-
-      @rectangle.segments[1].point.y -= stepSize
-      @rectangle.segments[2].point.y -= stepSize
-
-      @rectangle.opacity -= 1/@expandEnd
-      @expandProgress++
-    else
-      console.error "already fully expanded"
-
-  isFullyExpanded: ->
-    return @expandProgress == @expandEnd
-
-  destroy: ->
-    @rectangle.remove()
-
 
 $ ->
-  ###stats = new Stats()
+  stats = new Stats()
   stats.setMode(0)
   stats.domElement.style.position = 'fixed'
   stats.domElement.style.left = '0px'
   stats.domElement.style.top = '0px'
   stats.domElement.style.letterSpacing = '0px'
-  document.body.appendChild(stats.domElement)###
+  document.body.appendChild(stats.domElement)
+
 
   bgPaper = $('#bg_paper')
   bgPaper.attr
@@ -256,13 +277,11 @@ $ ->
 
   canvas = bgPaper[0]
   paper.setup(canvas)
+  window.lcm = new LissajousCircleManager(canvas)
 
   #paint background
   background = new paper.Path.Rectangle(paper.view.bounds)
   background.fillColor = new paper.GradientColor new paper.Gradient(['#fff', '#f8f8f8']), new paper.Point(paper.view.bounds.width/2, 0), [paper.view.bounds.width/2, paper.view.bounds.height]
-
-  #paint progressbar
-  window.progressBar = new ProgressBar(canvas, 20)
 
   paper.view.draw()
 
@@ -270,69 +289,31 @@ $ ->
   circles = []
 
   $.getJSON '/javascripts/lissajous_paths.json', (data) ->
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.4,  app.backgroundHue, 1,    0.5,  0.2, 0.2, 4000, 5)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.4,  app.backgroundHue, 1,    0.5,  0.2, 0.4, 2000, 5)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.3,  app.backgroundHue, 1,    0.82, 0.4, 0.2, 4500, 8)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.3,  app.backgroundHue, 1,    0.82, 0.4, 0.9, 3500, 8)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.2,  app.backgroundHue, 1,    0.64, 0.5, 0,   500)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.2,  app.backgroundHue, 1,    0.64, 0.5, 0.9, 2000)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.1,  app.backgroundHue, 0.37, 0.46, 0.6, 0.4, 4500)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.1,  app.backgroundHue, 0.37, 0.46, 0.6, 1.3)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.05, app.backgroundHue, 0.56, 0.47, 0.9, 0.2, 0,    12)
-    circles.push new LissajousCircle(canvas, data.lissajousPaths[circles.length], 0.05, app.backgroundHue, 0.56, 0.47, 0.9, 1.5, 5000, 12)
+    circles.push lcm.createLissajousCircle("biggest",  data.lissajousPaths[circles.length], 0.2, 1, 1000, 5)
+    circles.push lcm.createLissajousCircle("biggest",  data.lissajousPaths[circles.length], 0.2, 4, 4500, 5)
+    circles.push lcm.createLissajousCircle("big",      data.lissajousPaths[circles.length], 0.4, 0.5, 4500, 8)
+    circles.push lcm.createLissajousCircle("big",      data.lissajousPaths[circles.length], 0.4, 3, 3500, 8)
+    circles.push lcm.createLissajousCircle("medium",   data.lissajousPaths[circles.length], 0.5, 0.5,   500)
+    circles.push lcm.createLissajousCircle("medium",   data.lissajousPaths[circles.length], 0.5, 3.3, 2000)
+    circles.push lcm.createLissajousCircle("small",    data.lissajousPaths[circles.length], 0.6, 0.4, 4500)
+    circles.push lcm.createLissajousCircle("small",    data.lissajousPaths[circles.length], 0.6, 2.8)
+    circles.push lcm.createLissajousCircle("smallest", data.lissajousPaths[circles.length], 0.9, 0.2, 0,    12)
+    circles.push lcm.createLissajousCircle("smallest", data.lissajousPaths[circles.length], 0.9, 3.8, 5000, 12)
   
-  #define animations
-  onFrameAnimationState = "circles"
-  onFrameInstructions = 
-    circles: (delta) ->
-      for c in circles
-        c.circle.position = c.getNextLocation(delta)
-        
-        if app.colorAnimation.isRunning()
-          if app.colorAnimation.isFirstStep()
-            c.prepareColorAnimationTo(app.backgroundHue)
-          c.applyColorAnimationStep(app.colorAnimation.isLastStep())
 
-      app.colorAnimation.current++ if app.colorAnimation.isRunning()
-
-    progressBar: ->
-      circlesInstructions[circles.length]()
-      progressBar.setProgress(circles.length * 100)
-
-      if progressBar.isFinished()
-        onFrameAnimationState = "removeProgressBar"
-
-    removeProgressBar: ->
-      this.circles()
-      progressBar.expandVertically()
-
-      for c in circles
-        c.circle.opacity = 1 - progressBar.rectangle.opacity
-
-      if progressBar.isFullyExpanded()
-        onFrameAnimationState = "circles"
-        progressBar.destroy()
-        delete progressBar
-
+  # event handler
   paper.view.onFrame = (e) ->
-    #stats.begin()
-    onFrameInstructions[onFrameAnimationState](e.delta) 
-    #stats.end()
+    stats.begin()
+    lcm.applyNextAnimationStep(e.delta)
+    stats.end()
 
   if not $('html').hasClass 'touch'
     tool = new paper.Tool()
     tool.onMouseMove = (e) ->
-      for c in circles
-        if !c.listenToMouseRepulsion()
-          continue
+      lcm.mouseRepulsion e.point
 
-        hitResult = c.circle.hitTest e.point,
-          tolerance: 50
-          fill: true
-          stroke: true
-
-        if hitResult && hitResult.item
-          c.setMouseRepulsion e.point
+  $(window).bind "backgroundHueChange", (e) ->
+    lcm.changeHue(e.hue)
 
   $(window).resize (e) ->
     w = $(window).width()
@@ -346,14 +327,10 @@ $ ->
 
     background.scale horizontalFactor, verticalFactor, [0, 0]
 
-    for c in circles
-      c.adjustToSize horizontalFactor, verticalFactor
-
-    progressBar.adjustToSize(horizontalFactor, verticalFactor) if progressBar?
+    lcm.adjustToSize horizontalFactor, verticalFactor
 
   $(window).scroll (e) ->
-    for c in circles
-      c.setScrollOffset $(window).scrollTop()
+    lcm.setScrollOffset $(window).scrollTop()
 
 
 
