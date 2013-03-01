@@ -15,8 +15,8 @@ class LissajousCircleManager
     window.test = @circleSymbols
 
     @colorAnimation = 
-      current: 50
-      end: 50
+      current: 0
+      end: 5
       running: false
 
 
@@ -32,14 +32,14 @@ class LissajousCircleManager
       lc.circle.position = lc.getNextLocation(delta)
 
     if @colorAnimation.running
-      last = @colorAnimation.current == @colorAnimation.end
+      last = @colorAnimation.current >= @colorAnimation.end
       for size, cs of @circleSymbols
-        cs.applyColorAnimationStep(last)
+        cs.applyColorAnimationStep(@colorAnimation.current, @colorAnimation.end, delta, last)
 
       if last
         @colorAnimation.running = false
       else
-        @colorAnimation.current++
+        @colorAnimation.current += delta
 
   createLissajousCircle: (size, lissajousPathData, scrollFactor, relativeVerticalOffset, lissajousPathProgress, speed) ->
     @lissajousCircles.push new LissajousCircle(@circleSymbols[size], lissajousPathData, scrollFactor, relativeVerticalOffset, lissajousPathProgress, speed)
@@ -48,7 +48,7 @@ class LissajousCircleManager
     @colorAnimation.running = true
     @colorAnimation.current = 0
     for size, cs of @circleSymbols
-      cs.prepareColorAnimation(hue, @colorAnimation.end)
+      cs.prepareColorAnimation(hue)
 
   mouseRepulsion: (point) ->
     for lc in @lissajousCircles
@@ -74,6 +74,7 @@ class LissajousCircleManager
 class CircleSymbol extends paper.Symbol
   constructor: (@canvas, size, hue, saturation, lightness) ->
     @colorAnimation =
+      startColor: new paper.HslColor(hue, saturation, lightness)
       currentColor: new paper.HslColor(hue, saturation, lightness)
       desiredColor: new paper.HslColor(hue, saturation, lightness)
 
@@ -90,7 +91,13 @@ class CircleSymbol extends paper.Symbol
     f = if @canvas.width > @canvas.height then horizontalFactor else verticalFactor
     @definition.scale f
 
-  applyColorAnimationStep: (last) ->
+  applyColorAnimationStep: (current, end, delta, last) ->
+    next = (current + delta) / end
+
+    @colorAnimation.redStep = (@colorAnimation.desiredColor.red - @colorAnimation.currentColor.red) * next
+    @colorAnimation.greenStep = (@colorAnimation.desiredColor.green - @colorAnimation.currentColor.green) * next
+    @colorAnimation.blueStep = (@colorAnimation.desiredColor.blue - @colorAnimation.currentColor.blue) * next
+
     for s in @definition.fillColor.gradient.stops
       if last
         @colorAnimation.currentColor.red = s.color.red = @colorAnimation.desiredColor.red
@@ -101,12 +108,8 @@ class CircleSymbol extends paper.Symbol
         @colorAnimation.currentColor.green = s.color.green += @colorAnimation.greenStep
         @colorAnimation.currentColor.blue = s.color.blue += @colorAnimation.blueStep
 
-  prepareColorAnimation: (hue, end) ->
+  prepareColorAnimation: (hue) ->
     @colorAnimation.desiredColor.hue = hue
-
-    @colorAnimation.redStep = (@colorAnimation.desiredColor.red - @colorAnimation.currentColor.red) / end
-    @colorAnimation.greenStep = (@colorAnimation.desiredColor.green - @colorAnimation.currentColor.green) / end
-    @colorAnimation.blueStep = (@colorAnimation.desiredColor.blue - @colorAnimation.currentColor.blue) / end
 
 
 
@@ -142,9 +145,12 @@ class LissajousCircle
 
 
   adjustToSize: (horizontalFactor, verticalFactor) ->
+    oldVerticalOffset = @verticalOffset
+    @verticalOffset = @relativeVerticalOffset * ($('body').height() / 4) * @scrollFactor
+    
     for s in @lissajousPath.segments
       s.point.x *= horizontalFactor
-      s.point.y *= verticalFactor
+      s.point.y = (s.point.y - oldVerticalOffset) * verticalFactor + @verticalOffset
 
       if s.handleIn?
         s.handleIn.x *= horizontalFactor
@@ -153,9 +159,6 @@ class LissajousCircle
       if s.handleOut?
         s.handleOut.x *= horizontalFactor
         s.handleOut.y *= verticalFactor
-
-    @verticalOffset = @relativeVerticalOffset * ($('body').height() / 4) * @scrollFactor
-    @lissajousPath.position = [0, @verticalOffset]
 
     if @state == "return"
       @calculateReturnPath()
