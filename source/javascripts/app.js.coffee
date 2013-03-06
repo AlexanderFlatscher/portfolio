@@ -9,6 +9,9 @@ Modernizr.load
         $('.fastclick').each ->
           console.log "fastclick"
           new FastClick(this)
+,
+  test: Modernizr.mq('only all')
+  nope: "javascripts/respond.min.js"
 ###,
   test: Modernizr.canvas
   yep: "/javascripts/paper.js"###
