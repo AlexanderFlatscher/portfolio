@@ -1,5 +1,4 @@
-if !Modernizr.canvas #do nothing if canvas isn't available
-  return
+return unless Modernizr.canvas #do nothing if canvas isn't available
 
 
 class LissajousCircleManager
@@ -264,6 +263,7 @@ class LissajousCircle
 
 
 $ ->
+  ###
   stats = new Stats()
   stats.setMode(0)
   stats.domElement.style.position = 'fixed'
@@ -271,7 +271,7 @@ $ ->
   stats.domElement.style.top = '0px'
   stats.domElement.style.letterSpacing = '0px'
   document.body.appendChild(stats.domElement)
-
+  ###
 
   bgPaper = $('#bg_paper')
   bgPaper.attr
@@ -306,9 +306,9 @@ $ ->
 
   # event handler
   paper.view.onFrame = (e) ->
-    stats.begin()
+    #stats.begin()
     lcm.applyNextAnimationStep(e.delta)
-    stats.end()
+    #stats.end()
 
   if not $('html').hasClass 'touch'
     tool = new paper.Tool()
