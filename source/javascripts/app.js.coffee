@@ -18,7 +18,8 @@ Modernizr.load
 
 
 $ ->
-  firstSlide = $('.slide').first()
+  slides = $('.slide')
+  firstSlide = slides.first()
 
   window.app =
 
@@ -29,7 +30,7 @@ $ ->
       if s
         app.activeSlide = s
         app.applyBackgroundHue(parseFloat(s.attr('data-background-hue')))
-        $('#wrapper').trigger 'sectionChange'
+        $(window).trigger $.Event('sectionChange', {hue: app.backgroundHue, index: slides.index(s)})
       else
         return false
 
@@ -37,15 +38,4 @@ $ ->
 
     applyBackgroundHue: (hue) ->
       app.backgroundHue = hue
-      $(window).trigger $.Event('backgroundHueChange', {hue: hue})
-      #app.colorAnimation.current = 0
 
-    ###colorAnimation:
-      current: 0
-      end: 50
-      isRunning: () ->
-        return app.colorAnimation.current < app.colorAnimation.end
-      isFirstStep: () ->
-        return app.colorAnimation.current == 0
-      isLastStep: () ->
-        return app.colorAnimation.current == (app.colorAnimation.end - 1)###

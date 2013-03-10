@@ -17,8 +17,8 @@ $small_nav_transition_speed: 200ms
 
 @font-face
   font-family: 'icomoon'
-  src: url('/fonts/icomoon.eot')
-  src: url('/fonts/icomoon.eot?#iefix') format("embedded-opentype"), url('/fonts/icomoon.woff') format("woff"), url('/fonts/icomoon.ttf') format("truetype"), url('/fonts/icomoon.svg#icomoon') format("svg")
+  //src: url('/fonts/icomoon.eot')
+  src: url('/fonts/icomoon.woff') format("woff")
   font-weight: normal
   font-style: normal
 
@@ -57,6 +57,12 @@ $small_nav_transition_speed: 200ms
     background: rgba(255,255,255,0.4)
   .no-rgba &, .no-js &
     background: white
+
+@mixin bg_circle($size, $width, $size_bg)
+  .#{$size}.layer .bg_circle
+    width: $width
+    height: $width
+    background-image: url(/images/bg_no_canvas_#{$size}_#{$size_bg}.png)
 
 
 .icon
@@ -201,6 +207,92 @@ nav
     +translateX(- $small_nav_width)
   .nav_open.no-csstransforms &, no-js &
     left: - $small_nav_width
+
+#bg_paper
+  .no-canvas &, .no-js &
+    display: none
+
+#bg_no_canvas
+  .canvas &, .no-js &
+    display: none
+
+  .layer
+    position: absolute
+    left: 0
+    top: 0
+    width: 100%
+    height: 1px
+
+    .bg_circle_container
+      position: absolute
+
+      .bg_circle
+        position: absolute
+        top: 0
+        left: 0
+
+        .csstransitions.opacity &
+          opacity: 1
+          +transition(1000ms opacity)
+
+          &.inactive
+            opacity: 0
+
+      .bg_circle1
+        background-position: 33.33333% 0
+
+      .bg_circle2
+        background-position: 66.66666% 0
+
+      .bg_circle3
+        background-position: 100% 0
+
+    #bg_circle_container0
+      left: -10%
+      top: 800px
+
+    #bg_circle_container1
+      right: 50%
+      top: 100px
+
+    #bg_circle_container2
+      left: 10%
+      top: 250px
+
+    #bg_circle_container3
+      right: 40%
+      top: 1300px
+
+    #bg_circle_container4
+      left: 5%
+      top: 500px
+
+    #bg_circle_container5
+      left: 50%
+      top: 1500px
+
+    #bg_circle_container6
+      right: 80%
+      top: 2500px
+
+    #bg_circle_container7
+      left: 10%
+      top: 1200px
+
+    #bg_circle_container8
+      left: 50%
+      top: 1300px
+
+    #bg_circle_container9
+      left: 30%
+      top: 100px
+
+  +bg_circle('biggest', 450px, 800)
+  +bg_circle('big', 400px, 800)
+  +bg_circle('medium', 300px, 800)
+  +bg_circle('small', 200px, 800)
+  +bg_circle('smallest', 100px, 800)
+
 
 #wrapper
   z-index: 1
@@ -776,10 +868,60 @@ footer
     .no-canvas &, .no-js &
       background: url(/images/no_canvas_bg_1600.png) center top repeat-y
 
-
   h1
     font-size: 100px
     margin: 150px 0 50px 0
+
+  #bg_no_canvas
+
+    +bg_circle('biggest', 900px, 1600)
+    +bg_circle('big', 800px, 1600)
+    +bg_circle('medium', 600px, 1600)
+    +bg_circle('small', 400px, 1600)
+    +bg_circle('smallest', 200px, 1600)
+
+    .layer
+
+      #bg_circle_container0
+        left: -10%
+        top: 800px
+
+      #bg_circle_container1
+        right: 50%
+        top: 100px
+
+      #bg_circle_container2
+        left: 10%
+        top: 250px
+
+      #bg_circle_container3
+        right: 40%
+        top: 1300px
+
+      #bg_circle_container4
+        left: 5%
+        top: 500px
+
+      #bg_circle_container5
+        left: 50%
+        top: 1500px
+
+      #bg_circle_container6
+        right: 80%
+        top: 2500px
+
+      #bg_circle_container7
+        left: 10%
+        top: 1200px
+
+      #bg_circle_container8
+        left: 50%
+        top: 1300px
+
+      #bg_circle_container9
+        left: 30%
+        top: 100px
+
 
   #wrapper
     .slide 

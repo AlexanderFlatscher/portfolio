@@ -13,7 +13,8 @@
     
     = stylesheet_link_tag "normalize", "all"
     /= javascript_include_tag "Stats"
-    = javascript_include_tag  "//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js", "modernizr", "paper", "jquery.scrollTo-1.4.3.1-min", "all"
+    /= javascript_include_tag "http://jsconsole.com/remote.js?315ECF50-589D-4D08-A01A-1ECFAD87C6A3"
+    = javascript_include_tag  "//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js", "modernizr", "paper", "jquery.scrollTo-1.4.3.1-min", "all"
   
   %body{:class => page_classes}
     %nav#nav.fastclick
@@ -28,6 +29,17 @@
         %li
           %a.contact{href:"#contact"} contact me
     %canvas#bg_paper.bg
+    #bg_no_canvas.bg
+      - circle_index = 0
+      - sizes = "biggest big medium small smallest".split(" ")
+      - sizes.each do |s|
+        .layer{class:s}
+          - 2.times do
+            .bg_circle_container{id:"bg_circle_container#{circle_index}"}
+              - circle_index += 1
+              - 4.times do |i|
+                .bg_circle{class:"bg_circle#{i}"}
+
     #wrapper
       = yield
 

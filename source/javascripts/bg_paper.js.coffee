@@ -1,8 +1,7 @@
 return unless Modernizr.canvas #do nothing if canvas isn't available
 
-
 class LissajousCircleManager
-  constructor: (@canvas) ->
+  constructor: (@canvas, @scrollTop = 0) ->
     @lissajousCircles = []
     @circleSymbols = 
       biggest:  new CircleSymbol(@canvas, 0.4, app.backgroundHue, 1, 0.5)
@@ -63,6 +62,7 @@ class LissajousCircleManager
         lc.setMouseRepulsion point
 
   setScrollOffset: (top) ->
+    @scrollTop = top
     for lc in @lissajousCircles
       lc.setScrollOffset(top)
 
@@ -273,14 +273,15 @@ $ ->
   document.body.appendChild(stats.domElement)
   ###
 
+  $window = $(window)
   bgPaper = $('#bg_paper')
   bgPaper.attr
-    width: $(window).width()
-    height: $(window).height()
+    width: $window.width()
+    height: $window.height()
 
   canvas = bgPaper[0]
   paper.setup(canvas)
-  window.lcm = new LissajousCircleManager(canvas)
+  window.lcm = new LissajousCircleManager(canvas, $window.scrollTop())
 
   #paint background
   background = new paper.Path.Rectangle(paper.view.bounds)
@@ -307,20 +308,22 @@ $ ->
   # event handler
   paper.view.onFrame = (e) ->
     #stats.begin()
+    scrollTop = $window.scrollTop()
+    lcm.setScrollOffset(scrollTop) if scrollTop != lcm.scrollTop
     lcm.applyNextAnimationStep(e.delta)
     #stats.end()
 
-  if not $('html').hasClass 'touch'
+  if not Modernizr.touch
     tool = new paper.Tool()
     tool.onMouseMove = (e) ->
       lcm.mouseRepulsion e.point
 
-  $(window).bind "backgroundHueChange", (e) ->
+  $window.bind "sectionChange", (e) ->
     lcm.changeHue(e.hue)
 
-  $(window).resize (e) ->
-    w = $(window).width()
-    h = $(window).height()
+  $window.resize (e) ->
+    w = $window.width()
+    h = $window.height()
 
     oldSize = [paper.view.viewSize.width, paper.view.viewSize.height]
     newSize = paper.view.viewSize = [w, h]
@@ -331,9 +334,6 @@ $ ->
     background.scale horizontalFactor, verticalFactor, [0, 0]
 
     lcm.adjustToSize horizontalFactor, verticalFactor
-
-  $(window).scroll (e) ->
-    lcm.setScrollOffset $(window).scrollTop()
 
 
 
