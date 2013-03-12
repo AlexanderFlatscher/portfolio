@@ -284,8 +284,8 @@ $ ->
   window.lcm = new LissajousCircleManager(canvas, $window.scrollTop())
 
   #paint background
-  background = new paper.Path.Rectangle(paper.view.bounds)
-  background.fillColor = new paper.GradientColor new paper.Gradient(['#fff', '#f8f8f8']), new paper.Point(paper.view.bounds.width/2, 0), [paper.view.bounds.width/2, paper.view.bounds.height]
+  #background = new paper.Path.Rectangle(paper.view.bounds)
+  #background.fillColor = new paper.GradientColor new paper.Gradient(['#fff', '#f8f8f8']), new paper.Point(paper.view.bounds.width/2, 0), [paper.view.bounds.width/2, paper.view.bounds.height]
 
   paper.view.draw()
 
@@ -313,7 +313,11 @@ $ ->
     lcm.applyNextAnimationStep(e.delta)
     #stats.end()
 
-  if not Modernizr.touch
+  if Modernizr.touch
+    document.addEventListener "touchmove", (e) ->
+      console.log e
+    , false
+  else
     tool = new paper.Tool()
     tool.onMouseMove = (e) ->
       lcm.mouseRepulsion e.point
@@ -331,7 +335,7 @@ $ ->
     horizontalFactor = newSize[0] / oldSize[0]
     verticalFactor = newSize[1] / oldSize[1]
 
-    background.scale horizontalFactor, verticalFactor, [0, 0]
+    #background.scale horizontalFactor, verticalFactor, [0, 0]
 
     lcm.adjustToSize horizontalFactor, verticalFactor
 

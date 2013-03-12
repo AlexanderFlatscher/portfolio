@@ -5,14 +5,21 @@
   description: >
     This project wants to give a pure impression of the different eating habits and cultures all over the world. The aim is to collect international recipes. The clue: three of the recipe's ingredients have to be eggs, potatoes and onions. 
 
+- name: Web projects - an agile approach
+  categories: [Scrum, Pivotal Tracker, process model, waterfall model, bachelor thesis]
+  description: >
+    My second bachelor thesis researches how the process model changes the project process and the collaboration of webdesigners and webdevelopers. Therefore I recorded the Scrum process of our final project Jacob Joins and compared it to an exemplarily process with the well-known waterfall model. 
+
+- name: jQuery Mobile vs. Sencha Touch
+  categories: [mobile, Sencha Touch, jQuery Mobile, bachelor thesis]
+  link: http://bakk1todo.herokuapp.com/
+  code: https://github.com/AlexanderFlatscher/bakk1todo
+  description: >
+    In the course of my first bachelor thesis I compared two technologies for the realization of mobile web apps, namely Sencha Touch and jQuery Mobile. Therefore I developed a ToDo App.
+
 - name: s'bickt
   categories: [Android, GeoTagging, Augmented Reality, Ruby on Rails, KML]
   link: http://sbickt.heroku.com/
   code: https://github.com/ihanli/sbicktAndroid
   description: >
     s'bickt (austrian dialekt for "it sticks") is a proof of concept of an augmented reality, community based app available for iOS and Android devices. It tags your messages with geodata and projects them onto the screen, when you activate the camera.
-
-- name: ToDo Web App
-  categories: [mobile, Sencha Touch, jQuery Mobile, bachelor thesis]
-  description: >
-    In the course of my first bachelor thesis I compared two technologies for the realization of mobile web apps, namely Sencha Touch and jQuery Mobile. Therefore I developed a ToDo App.

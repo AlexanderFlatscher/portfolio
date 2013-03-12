@@ -34,7 +34,7 @@
   - data.works.each do |w|
     %article.item
       .image
-        = image_tag "work/#{w.name.gsub(/[\s']/, ' ' => '_', '\'' => '').downcase}.png"
+        = image_tag "work/#{w.name.gsub(/[\s'\.]/, ' ' => '_', '\'' => '', '.' => '').downcase}.png"
       .info
         %h2
           = w.name
@@ -66,6 +66,6 @@
   %p.so
     So you wanna know even more about me and <br>my work or just get in touch?
   %p.just
-    Just send me an email to <a class="hyphenate" href="mailto:alexander.flatscher@gmail.com">alexander.flatscher@gmail.com</a><br> or check out my <a href="https://github.com/billythetalented/">GitHub</a> repositories!
+    Just send me an email to <a class="hyphenate" href="mailto:alexander.flatscher@gmail.com">alexander.flatscher@gmail.com</a><br> or check out my <a href="https://github.com/AlexanderFlatscher/">GitHub</a> repositories!
 
 
