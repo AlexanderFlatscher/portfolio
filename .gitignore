@@ -12,5 +12,8 @@
 
 # Ignore Sass' cache
 /.sass-cache
+
 .rvmrc
 .DS_Store
+*.psd
+*.ai
