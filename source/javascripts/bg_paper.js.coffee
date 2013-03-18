@@ -1,7 +1,7 @@
 return unless Modernizr.canvas #do nothing if canvas isn't available
 
 class LissajousCircleManager
-  constructor: (@canvas, @scrollTop = 0) ->
+  constructor: (@canvas) ->
     @lissajousCircles = []
     @circleSymbols = 
       biggest:  new CircleSymbol(@canvas, 0.4, app.backgroundHue, 1, 0.5)
@@ -62,7 +62,6 @@ class LissajousCircleManager
         lc.setMouseRepulsion point
 
   setScrollOffset: (top) ->
-    @scrollTop = top
     for lc in @lissajousCircles
       lc.setScrollOffset(top)
 
@@ -283,10 +282,6 @@ $ ->
   paper.setup(canvas)
   window.lcm = new LissajousCircleManager(canvas, $window.scrollTop())
 
-  #paint background
-  #background = new paper.Path.Rectangle(paper.view.bounds)
-  #background.fillColor = new paper.GradientColor new paper.Gradient(['#fff', '#f8f8f8']), new paper.Point(paper.view.bounds.width/2, 0), [paper.view.bounds.width/2, paper.view.bounds.height]
-
   paper.view.draw()
 
   #prepare circles
@@ -304,13 +299,20 @@ $ ->
     circles.push lcm.createLissajousCircle("smallest", data.lissajousPaths[circles.length], 0.9, 0.2, 0,    12)
     circles.push lcm.createLissajousCircle("smallest", data.lissajousPaths[circles.length], 0.9, 3.8, 5000, 12)
   
+  scrollTop = 0
+  windowHeight = $window.height()
 
   # event handler
   paper.view.onFrame = (e) ->
     #stats.begin()
-    scrollTop = $window.scrollTop()
-    lcm.setScrollOffset(scrollTop) if scrollTop != lcm.scrollTop
+
+    sT = $window.scrollTop()
+    if sT != scrollTop
+      lcm.setScrollOffset(sT)
+      scrollTop = sT
+
     lcm.applyNextAnimationStep(e.delta)
+
     #stats.end()
 
   if Modernizr.touch
@@ -325,7 +327,7 @@ $ ->
   $window.bind "sectionChange", (e) ->
     lcm.changeHue(e.hue)
 
-  $window.resize (e) ->
+  $window.resize ->
     w = $window.width()
     h = $window.height()
 
@@ -334,8 +336,6 @@ $ ->
 
     horizontalFactor = newSize[0] / oldSize[0]
     verticalFactor = newSize[1] / oldSize[1]
-
-    #background.scale horizontalFactor, verticalFactor, [0, 0]
 
     lcm.adjustToSize horizontalFactor, verticalFactor
 

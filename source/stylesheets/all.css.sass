@@ -1,4 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Lobster+Two:400|Quicksand:300,400)
+@import url(http://fonts.googleapis.com/css?family=Lobster+Two:400,700|Quicksand:300,400)
 @import "compass/utilities/general/clearfix"
 @import "compass/css3/images"
 @import "compass/css3/transform"
@@ -74,7 +74,7 @@ body
   font:
     size: 16px
     family: Quicksand, sans-serif
-    weight: 300
+    weight: 400
   line-height: 1
   letter-spacing: -0.095em
   +text_color()
@@ -146,7 +146,7 @@ nav
 
   ul
     margin: 0
-    padding: 60px 0 0
+    padding: 18px 0 0
 
     li
       margin-bottom: 20px
@@ -336,7 +336,8 @@ nav
       &.hey
         font:
           family: "Lobster Two", "Times New Roman", Times, serif
-        font-size: 80px
+          size: 80px
+          weight: 400
         letter-spacing: normal
         position: relative
 
@@ -368,11 +369,15 @@ nav
         display: inline
 
       &.wanna
-        font-size: 30px
+        font:
+          size: 30px
+          weight: 300
         margin-bottom: 0px
 
       &.or
-        font-size: 20px
+        font:
+          size: 20px
+          weight: 300
 
 #about
   h1
@@ -417,44 +422,41 @@ nav
         overflow: hidden
         -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC) /* this fixes the overflow:hidden in Chrome */
 
-      &:after
-        content: ""
-        position: absolute
-        top: 170px
-        bottom: 0
-        left: 0
-        right: 0
-
-        .rgba &
-          background: rgba(255,255,255,0.8)
-        .no-rgba &, .no-js &
-          background: white
-
       img
         width: 300px
         height: 300px
 
     .info
-      margin-top: -125px
-      position: relative
+      margin-top: 0
       +clearfix()
 
       h2
         font:
           size: 40px
           family: "Lobster Two"
+          weight: 700
         text-align: center
         margin: 0 0 10px
 
       .categories
         text-align: center
-        width: 190px
+        width: 280px
         margin: 0 auto
         font-weight: 400
 
+
       .description
         margin-top: 30px
+        position: relative
         +justify_if_js
+        
+        &:before
+          content: ""
+          border-bottom: $dashed_border
+          position: absolute
+          top: -15px
+          width: 100%
+          left: 0
 
       .code, .link
         float: right
@@ -863,6 +865,9 @@ footer
       .info
         h2
           margin-top: 20px
+
+        .categories
+          letter-spacing: -1px
 
   #contact
     p
